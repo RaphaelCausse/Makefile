@@ -35,14 +35,10 @@ DIR_SRC = src/
 DIR_OBJ = $(DIR_BUILD)obj/
 
 # Target executable and files.
-TARGET = $(DIR_BUILD)prog.out
+TARGET = $(DIR_BUILD)prog.app
 SRCS = $(wildcard $(DIR_SRC)*.c $(DIR_SRC)*.cpp)
-OBJS = \
-		$(patsubst $(DIR_SRC)%.c, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.c)) \
+OBJS = 	$(patsubst $(DIR_SRC)%.c, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.c)) \
 		$(patsubst $(DIR_SRC)%.cpp, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.cpp))
-
-# Count source files.
-CNT_SRCS = $(words $(SRCS))
 
 # Shell commands.
 MKDIR_P = mkdir -p
@@ -69,7 +65,7 @@ $(DIR_OBJ)%.o: $(DIR_SRC)%.c
 # Rule for C++ files.
 $(DIR_OBJ)%.o: $(DIR_SRC)%.cpp
 	@echo ":: Compile $<"
-	$(MKDIR_P) $(DIR_OBJ)
+	@$(MKDIR_P) $(DIR_OBJ)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Run the executable.
@@ -80,5 +76,6 @@ run: $(TARGET)
 # Clean the project directory.
 .PHONY: clean
 clean:
-	@$(RM) $(DIR_BUILD)
-	@echo "Clean successful !"
+	@echo ":: Clean project directory"
+	$(RM) $(DIR_BUILD)
+	@echo "==> Done"
