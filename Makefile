@@ -4,15 +4,15 @@
 
 
 # Compiler and linker.
-CC = gcc
-# CC += -fsanitize=address
-CXX = g++
-# CXX += -fsanitize=address
-LD = g++
+CC := gcc
+#CC += -fsanitize=address
+CXX := g++
+#CXX += -fsanitize=address
+LD := g++
 
 # Compiler flags.
 CFLAGS = -Wall -Wextra -g -O2 -I$(DIR_INC)
-CXXFLAGS = -Wall -g -O2 -I$(DIR_INC)
+CXXFLAGS = -Wall -Wextra -g -O2 -I$(DIR_INC)
 # Extra compiler flags.
 EXTRA_CFLAGS :=
 EXTRA_CXXFLAGS :=
@@ -29,20 +29,20 @@ EXTRA_LDFLAGS :=
 LDLIBS :=
 
 # Directories path.
-DIR_BUILD = build/
-DIR_INC = include/
-DIR_SRC = src/
-DIR_OBJ = $(DIR_BUILD)obj/
+DIR_BUILD := build/
+DIR_INC := include/
+DIR_SRC := src/
+DIR_OBJ := $(DIR_BUILD)obj/
 
 # Target executable and files.
-TARGET = $(DIR_BUILD)prog.app
-SRCS = $(wildcard $(DIR_SRC)*.c $(DIR_SRC)*.cpp)
-OBJS = 	$(patsubst $(DIR_SRC)%.c, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.c)) \
-		$(patsubst $(DIR_SRC)%.cpp, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.cpp))
+TARGET := $(DIR_BUILD)prog.app
+SRCS := $(wildcard $(DIR_SRC)*.c $(DIR_SRC)*.cpp)
+OBJS := $(patsubst $(DIR_SRC)%.c, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.c)) \
+	   $(patsubst $(DIR_SRC)%.cpp, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.cpp))
 
 # Shell commands.
-MKDIR_P = mkdir -p
-RM = rm -rf
+MKDIR_P := mkdir -p
+RM := rm -rf
 
 # Compilation and linking.
 .PHONY: all
@@ -71,7 +71,8 @@ $(DIR_OBJ)%.o: $(DIR_SRC)%.cpp
 # Run the executable.
 .PHONY: run
 run: $(TARGET)
-	./$(TARGET)
+	@echo ":: Run $(TARGET)"
+	@./$(TARGET)
 
 # Clean the project directory.
 .PHONY: clean
