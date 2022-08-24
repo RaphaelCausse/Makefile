@@ -45,6 +45,7 @@ git clone https://github.com/RaphaelCausse/Simple-Generic-Makefile.git
 ```
 cd Simple-Generic-Makefile
 ```
+**Copy** the Makefile in your project.
 **Compile** the project :
 ```bash
 make
