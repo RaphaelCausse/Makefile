@@ -39,8 +39,8 @@ LDLIBS := -lm
 # Files set up.
 #
 TARGET := app
-SRCS.c := $(shell find $(DIR_SRC) -name *.c)
-SRCS.cpp := $(shell find $(DIR_SRC) -name *.cpp)
+SRCS.c := $(shell find $(DIR_SRC) -name *.c 2> /dev/null)
+SRCS.cpp := $(shell find $(DIR_SRC) -name *.cpp 2> /dev/null)
 
 # Shell commands.
 #
@@ -69,8 +69,6 @@ DBG_OBJS := $(addprefix $(DIR_OBJ_DBG),$(patsubst %.c,%.o,$(notdir $(SRCS.c)))) 
 # Default build, Release mode.
 #
 all: release
-
-#.PHONY: prep release debug
 
 # Before build, create directories if necessary.
 #
@@ -120,9 +118,7 @@ $(DIR_OBJ_DBG)%.o: $(DIR_SRC)%.cpp
 	$(CXX) $(CXXFLAGS) $(DBG_FLAGS) -c $< -o $@
 
 
-.PHONY: run clean info
-
-# Run target.
+# Run release or debug target.
 #
 run:
 	@if [ "$(MODE)" -eq "0" ]; then\
@@ -135,10 +131,10 @@ run:
 		echo "No target to run.";\
 	fi
 
-# Remove target and objet files.
+# Remove target and object files.
 #
 clean:
-	@echo ":: Clean build directory ..."
+	@echo ":: Clean project directory ..."
 	$(RM) $(DIR_BIN) $(DIR_OBJ)
 
 # Display source and object files.
@@ -152,3 +148,15 @@ info:
 	@echo
 	@echo "[*] Objects, debug: 	$(DBG_OBJS)"
 	@echo "[*] Target, debug:	$(DBG_TARGET)"
+
+# Display usage help. 
+#
+help:
+	@echo "Usage:"
+	@echo -e "\tmake \t\t\tBuild project, in Release mode by default."
+	@echo -e "\tmake debug \t\tBuild project in Debug mode."
+	@echo -e "\tmake run \t\tRun target, by default Release target."
+	@echo -e "\tmake run MODE=1 \tRun Debug target."
+	@echo -e "\tmake clean \t\tClean project directory."
+	@echo -e "\tmake info \t\tDisplay info about files in project directory."
+	@echo -e "\tmake help \t\tDisplay this help message."
