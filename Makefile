@@ -3,80 +3,152 @@
 # Date   : 08/2022
 
 
+# Mode for run rule. 0 is default for release mode, 1 is for debug mode.
+#
+MODE := 0
+
+# Directories path set up.
+#
+DIR_BIN := bin/
+DIR_SRC := src/
+DIR_OBJ := obj/
+DIR_INC := include/
+
 # Compiler and linker.
+#
 CC := gcc
-#CC += -fsanitize=address
 CXX := g++
-#CXX += -fsanitize=address
 LD := g++
 
 # Compiler flags.
-CFLAGS = -Wall -Wextra -g -O2 -I$(DIR_INC)
-CXXFLAGS = -Wall -Wextra -g -O2 -I$(DIR_INC)
-# Extra compiler flags.
-EXTRA_CFLAGS :=
-EXTRA_CXXFLAGS :=
-#CFLAGS += $(EXTRA_CFLAGS)
-#CXXFLAGS += $(EXTRA_CXXFLAGS)
+#
+CFLAGS := -Wall -Wextra -I$(DIR_INC)
+CXXFLAGS := -Wall -Wextra -I$(DIR_INC)
+# Sanitizer flags
+#
+FSAN_ADDRESS := -fsanitize=address
 
 # Linker flags.
-LDFLAGS = -I$(DIR_INC) -lm
-# Extra linker flags.
-EXTRA_LDFLAGS :=
-#LDFLAGS += $(EXTRA_LDFLAGS)
+#
+LDFLAGS := -I$(DIR_INC)
 
 # Library flags.
-LDLIBS :=
+#
+LDLIBS := -lm
 
-# Directories path.
-DIR_BUILD := build/
-DIR_INC := include/
-DIR_SRC := src/
-DIR_OBJ := $(DIR_BUILD)obj/
-
-# Target executable and files.
-TARGET := $(DIR_BUILD)prog.app
-SRCS := $(wildcard $(DIR_SRC)*.c $(DIR_SRC)*.cpp)
-OBJS := $(patsubst $(DIR_SRC)%.c, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.c)) \
-	   $(patsubst $(DIR_SRC)%.cpp, $(DIR_OBJ)%.o, $(wildcard $(DIR_SRC)*.cpp))
+# Files set up.
+#
+TARGET := app
+SRCS.c := $(shell find $(DIR_SRC) -name *.c)
+SRCS.cpp := $(shell find $(DIR_SRC) -name *.cpp)
 
 # Shell commands.
+#
 MKDIR_P := mkdir -p
 RM := rm -rf
 
-# Compilation and linking.
-.PHONY: all
-all: $(TARGET)
+# Release build set up. 
+#
+DIR_BIN_REL := $(DIR_BIN)release/
+DIR_OBJ_REL := $(DIR_OBJ)release/
+REL_TARGET := $(DIR_BIN_REL)$(TARGET)
+REL_FLAGS := -O2 -DNDEBUG
+REL_OBJS := $(addprefix $(DIR_OBJ_REL),$(patsubst %.c,%.o,$(notdir $(SRCS.c)))) \
+			$(addprefix $(DIR_OBJ_REL),$(patsubst %.cpp,%.o,$(notdir $(SRCS.cpp))))
 
-# Linking and generating the target executable.
-$(TARGET): $(OBJS)
-	@echo ":: Build $@"
-	@$(MKDIR_P) $(DIR_BUILD)
-	$(LD) $(LDFLAGS) $(LDLIBS) $^ -o $@
+# Debug build set up.
+#
+DIR_BIN_DBG := $(DIR_BIN)debug/
+DIR_OBJ_DBG := $(DIR_OBJ)debug/
+DBG_TARGET := $(DIR_BIN_DBG)$(TARGET)
+DBG_FLAGS := -g $(FSAN_ADDRESS) -O0 -DDEBUG
+DBG_OBJS := $(addprefix $(DIR_OBJ_DBG),$(patsubst %.c,%.o,$(notdir $(SRCS.c)))) \
+			$(addprefix $(DIR_OBJ_DBG),$(patsubst %.cpp,%.o,$(notdir $(SRCS.cpp))))
+
+
+# Default build, Release mode.
+#
+all: release
+
+#.PHONY: prep release debug
+
+# Before build, create directories if necessary.
+#
+prep:
+	@$(MKDIR_P) $(DIR_BIN_REL) $(DIR_BIN_DBG) $(DIR_OBJ_REL) $(DIR_OBJ_DBG)
+
+# Release build
+#
+release: prep $(REL_TARGET)
+
+# Linking for Release target.
+#
+$(REL_TARGET): $(REL_OBJS)
+	@echo ":: Build '$@' ..."
+	$(LD) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 	@echo "==> Done"
 
-# Compilation and generating object files (.o).
-# Rule for C files.
-$(DIR_OBJ)%.o: $(DIR_SRC)%.c
-	@echo ":: Compile $<"
-	@$(MKDIR_P) $(DIR_OBJ)
-	$(CC) $(CFLAGS) -c $< -o $@
+# Compilation source files for Release mode.
+#
+$(DIR_OBJ_REL)%.o: $(DIR_SRC)%.c
+	@echo ":: Compile '$<' ..."
+	$(CC) $(CFLAGS) $(REL_FLAGS) -c $< -o $@
 
-# Rule for C++ files.
-$(DIR_OBJ)%.o: $(DIR_SRC)%.cpp
-	@echo ":: Compile $<"
-	@$(MKDIR_P) $(DIR_OBJ)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(DIR_OBJ_REL)%.o: $(DIR_SRC)%.cpp
+	@echo ":: Compile '$<' ..."
+	$(CXX) $(CXXFLAGS) $(REL_FLAGS) -c $< -o $@
 
-# Run the executable.
-.PHONY: run
-run: $(TARGET)
-	@echo ":: Run $(TARGET)"
-	@./$(TARGET)
+# Debug build.
+#
+debug: prep $(DBG_TARGET)
 
-# Clean the project directory.
-.PHONY: clean
+# Linking for Debug mode.
+#
+$(DBG_TARGET): $(DBG_OBJS)
+	@echo ":: Build '$@' ..."
+	$(LD) $(LDFLAGS) $(FSAN_ADDRESS) $^ -o $@ $(LDLIBS)
+	@echo "==> Done"
+
+# Compilation source files for Debug mode.
+#
+$(DIR_OBJ_DBG)%.o: $(DIR_SRC)%.c
+	@echo ":: Compile '$<' ..."
+	$(CC) $(CFLAGS) $(DBG_FLAGS) -c $< -o $@
+
+$(DIR_OBJ_DBG)%.o: $(DIR_SRC)%.cpp
+	@echo ":: Compile '$<' ..."
+	$(CXX) $(CXXFLAGS) $(DBG_FLAGS) -c $< -o $@
+
+
+.PHONY: run clean info
+
+# Run target.
+#
+run:
+	@if [ "$(MODE)" -eq "0" ]; then\
+		echo ":: Run $(REL_TARGET) ...";\
+		./$(REL_TARGET);\
+	elif [ "$(MODE)" -eq "1" ]; then\
+		echo ":: Run $(DBG_TARGET) ...";\
+		./$(DBG_TARGET);\
+	else\
+		echo "No target to run.";\
+	fi
+
+# Remove target and objet files.
+#
 clean:
-	@echo ":: Clean project directory"
-	$(RM) $(DIR_BUILD)
-	@echo "==> Done"
+	@echo ":: Clean build directory ..."
+	$(RM) $(DIR_BIN) $(DIR_OBJ)
+
+# Display source and object files.
+#
+info:
+	@echo "[*] Sources, C: 	$(SRCS.c)"
+	@echo "[*] Sources, C++: 	$(SRCS.cpp)"
+	@echo
+	@echo "[*] Objects, release: 	$(REL_OBJS)"
+	@echo "[*] Target, release:	$(REL_TARGET)"
+	@echo
+	@echo "[*] Objects, debug: 	$(DBG_OBJS)"
+	@echo "[*] Target, debug:	$(DBG_TARGET)"
