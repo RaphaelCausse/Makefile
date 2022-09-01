@@ -1,11 +1,15 @@
 [![OS](https://img.shields.io/badge/os-linux-blue.svg)](https://shields.io/)
 [![Status](https://img.shields.io/badge/status-completed-success.svg)](https://shields.io/)
 
-# SIMPLE GENERIC MAKEFILE
+# GENERIC MAKEFILE
 
 Generic Makefile for small to medium sized C/C++ projects.
 
-The Makefile assumes source code is broken up in two groups, header files (.h/.hpp for C/C++) and implementation files (.c/.cpp for C/C++).
+The Makefile assumes source code is broken up in two groups, header files (.h/.hpp) and implementation files (.c/.cpp).
+
+You can build the project in two modes: Release or Debug.
+
+By default, the building process is in Release mode.
 
 <br>
 
@@ -19,11 +23,6 @@ To use this generic makefile properly, please follow this project directory layo
   ├──── README.md
   ├──── LICENSE.md
   │
-  ├──┬─[ build ]
-  │  ├─── exec
-  │  └──┬─[ obj ]
-  │     └─── *.o
-  │
   ├──┬─[ include ]
   │  └─── *.h / *.hpp
   │
@@ -31,29 +30,54 @@ To use this generic makefile properly, please follow this project directory layo
   │  ├─── main.c / main.cpp
   │  └─── *.c / *.cpp
   │
+  ├──┬─[ obj ]
+  │  ├──┬─[ debug ]
+  │  │  └─── *.o
+  │  └──┬─[ release ]
+  │     └─── *.o
+  │
+  ├──┬─[ bin ]
+  │  ├──┬─[ debug ]
+  │  │  └─── app
+  │  └──┬─[ release ]
+  │     └─── app
+  │
   └────...
 ```
+**_NOTE:_**<br>
+`bin` and `obj` directories and their subdirectories are not mandatory, they are created if they don't exist.
+
 <br>
 
 ## INSTALLATION
 
 **Clone** this repository:
 ```
-git clone https://github.com/RaphaelCausse/Simple-Generic-Makefile.git
+git clone https://github.com/RaphaelCausse/Generic-makefile.git
 ```
 **Move** to the cloned directory :
 ```
-cd Simple-Generic-Makefile
+cd Generic-makefile
 ```
 **Copy** the Makefile in your project.
-**Compile** the project :
+
+**Build** the project (default is Release mode):
 ```bash
 make
 ```
-**Run** the executable :
+or **build** the project in Debug mode:
+```bash
+make debug
+```
+**Run** the target (default is Release target) :
 ```
 make run
 ```
+or **run** the Debug target:
+```bash
+make run MODE=1
+```
+
 <br>
 
 ## FEATURES
@@ -61,6 +85,14 @@ make run
 **Clean** the project directory :
 ```bash
 make clean
+```
+**Display** info about files in project directory:
+```bash
+make info
+```
+**Display** help message:
+```bash
+make help
 ```
 <br>
 
