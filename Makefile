@@ -3,10 +3,6 @@
 # Date   : 08/2022
 
 
-# Mode for run rule. 0 is default for release mode, 1 is for debug mode.
-#
-MODE := 0
-
 # Directories path set up.
 #
 DIR_BIN := bin/
@@ -118,18 +114,17 @@ $(DIR_OBJ_DBG)%.o: $(DIR_SRC)%.cpp
 	$(CXX) $(CXXFLAGS) $(DBG_FLAGS) -c $< -o $@
 
 
-# Run release or debug target.
+# Run release target.
 #
 run:
-	@if [ "$(MODE)" -eq "0" ]; then\
-		echo ":: Run '$(REL_TARGET)' ...";\
-		./$(REL_TARGET);\
-	elif [ "$(MODE)" -eq "1" ]; then\
-		echo ":: Run '$(DBG_TARGET)' ...";\
-		./$(DBG_TARGET);\
-	else\
-		echo "No target to run.";\
-	fi
+	@echo ":: Run '$(REL_TARGET)' ...";\
+	./$(REL_TARGET);\
+
+# Run debug target.
+#
+run-debug:
+	@echo ":: Run '$(DBG_TARGET)' ...";\
+	./$(DBG_TARGET);\
 
 # Remove target and object files.
 #
@@ -156,7 +151,7 @@ help:
 	@echo -e "\tmake \t\t\tBuild project, in Release mode by default."
 	@echo -e "\tmake debug \t\tBuild project in Debug mode."
 	@echo -e "\tmake run \t\tRun target, by default Release target."
-	@echo -e "\tmake run MODE=1 \tRun Debug target."
+	@echo -e "\tmake run-debug \tRun Debug target."
 	@echo -e "\tmake clean \t\tClean project directory."
 	@echo -e "\tmake info \t\tDisplay info about files in project directory."
 	@echo -e "\tmake help \t\tDisplay this help message."
