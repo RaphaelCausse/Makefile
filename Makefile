@@ -122,10 +122,10 @@ $(DIR_OBJ_DBG)%.o: $(DIR_SRC)%.cpp
 #
 run:
 	@if [ "$(MODE)" -eq "0" ]; then\
-		echo ":: Run $(REL_TARGET) ...";\
+		echo ":: Run '$(REL_TARGET)' ...";\
 		./$(REL_TARGET);\
 	elif [ "$(MODE)" -eq "1" ]; then\
-		echo ":: Run $(DBG_TARGET) ...";\
+		echo ":: Run '$(DBG_TARGET)' ...";\
 		./$(DBG_TARGET);\
 	else\
 		echo "No target to run.";\
