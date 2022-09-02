@@ -75,7 +75,7 @@ make run
 ```
 or **run** the Debug target:
 ```bash
-make run MODE=1
+make run-debug
 ```
 
 <br>
