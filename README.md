@@ -13,6 +13,15 @@ By default, the building process is in Release mode.
 
 <br>
 
+# Table of Contents
+ 
+- [Project layout](##project-directory-layout)
+- [Installation](##installation)
+- [Usage](##usage)
+- [Features](##features)
+
+<br>
+
 ## PROJECT DIRECTORY LAYOUT
 
 To use this generic makefile properly, please follow this project directory layout.
@@ -23,24 +32,27 @@ To use this generic makefile properly, please follow this project directory layo
   ├──── README.md
   ├──── LICENSE.md
   │
-  ├──┬─[ include ]
-  │  └─── *.h / *.hpp
+  ├──┬─[ bin ]
+  │  ├──┬─[ debug ]
+  │  │  └──── app
+  │  └──┬─[ release ]
+  │     └──── app
   │
-  ├──┬─[ src ]
-  │  ├─── main.c / main.cpp
-  │  └─── *.c / *.cpp
+  ├──┬─[ include ]
+  │  └──── *.h / *.hpp
   │
   ├──┬─[ obj ]
   │  ├──┬─[ debug ]
-  │  │  └─── *.o
+  │  │  └──── *.o
   │  └──┬─[ release ]
-  │     └─── *.o
+  │     └──── *.o
   │
-  ├──┬─[ bin ]
-  │  ├──┬─[ debug ]
-  │  │  └─── app
-  │  └──┬─[ release ]
-  │     └─── app
+  ├──┬─[ src ]
+  │  ├──── main.c / main.cpp
+  │  ├──── *.c / *.cpp
+  │  ├──┬─[ modules ]
+  │  │  └──── *.c / *.cpp
+  │  └────...
   │
   └────...
 ```
@@ -60,6 +72,10 @@ git clone https://github.com/RaphaelCausse/Generic-makefile.git
 cd Generic-makefile
 ```
 **Copy** the Makefile in your project.
+
+<br>
+
+## USAGE
 
 **Build** the project (default is Release mode):
 ```bash
