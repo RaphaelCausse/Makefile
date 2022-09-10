@@ -72,6 +72,7 @@ all: release
 # Before build, create directories if necessary.
 #
 prep:
+	@echo ":: Create project directories ..."
 	@$(MKDIR_P) $(DIR_BIN_REL) $(DIR_BIN_DBG) $(DIR_OBJ_REL) $(DIR_OBJ_DBG)
 
 # Release build
