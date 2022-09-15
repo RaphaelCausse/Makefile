@@ -73,7 +73,7 @@ all: release
 #
 prep:
 	@echo ":: Create project directories ..."
-	@$(MKDIR_P) $(DIR_BIN_REL) $(DIR_BIN_DBG) $(DIR_OBJ_REL) $(DIR_OBJ_DBG)
+	@$(MKDIR_P) $(DIR_BIN_REL) $(DIR_BIN_DBG) $(DIR_PATH_OBJ_REL) $(DIR_PATH_OBJ_DBG)
 
 # Release build
 #
@@ -86,7 +86,7 @@ $(REL_TARGET): $(REL_OBJS)
 	$(LD) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 	@echo "==> Done"
 
-# Compilation source files for Release mode.
+# Compiling source files for Release mode.
 #
 $(DIR_OBJ_REL)/%.o: $(DIR_SRC)/%.c
 	@echo ":: Compile '$<' ..."
@@ -107,7 +107,7 @@ $(DBG_TARGET): $(DBG_OBJS)
 	$(LD) $(LDFLAGS) $(FSAN_ADDRESS) $^ -o $@ $(LDLIBS)
 	@echo "==> Done"
 
-# Compilation source files for Debug mode.
+# Compiling source files for Debug mode.
 #
 $(DIR_OBJ_DBG)/%.o: $(DIR_SRC)/%.c
 	@echo ":: Compile '$<' ..."
