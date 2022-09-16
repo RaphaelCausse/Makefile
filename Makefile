@@ -1,4 +1,5 @@
 # Generic Makefile for C/C++ projects.
+# Please follow recommended directory layout in README.
 # Author : Raphael CAUSSE
 # Date   : 08/2022
 
@@ -6,15 +7,15 @@
 # Directories path set up.
 #
 DIR_BIN := bin
-DIR_SRC := src
-DIR_OBJ := obj
 DIR_INC := include
+DIR_OBJ := obj
+DIR_SRC := src
 
 # Compiler and linker.
 #
-CC := clang
-CXX := clang++
-LD := clang++
+CC := gcc
+CXX := g++
+LD := g++
 
 # Compiler flags.
 #
@@ -49,7 +50,7 @@ RM := rm -rf
 DIR_BIN_REL := $(DIR_BIN)/release
 DIR_OBJ_REL := $(DIR_OBJ)/release
 REL_TARGET := $(DIR_BIN_REL)/$(TARGET)
-REL_FLAGS := -O2 -DNDEBUG
+REL_FLAGS := -O3 -DNDEBUG
 REL_OBJS := $(patsubst $(DIR_SRC)/%.c,$(DIR_OBJ_REL)/%.o,$(SRCS.c)) \
 			$(patsubst $(DIR_SRC)/%.cpp,$(DIR_OBJ_REL)/%.o,$(SRCS.cpp))
 DIR_PATH_OBJ_REL := $(dir $(REL_OBJS))
@@ -59,7 +60,7 @@ DIR_PATH_OBJ_REL := $(dir $(REL_OBJS))
 DIR_BIN_DBG := $(DIR_BIN)/debug
 DIR_OBJ_DBG := $(DIR_OBJ)/debug
 DBG_TARGET := $(DIR_BIN_DBG)/$(TARGET)
-DBG_FLAGS := -g $(FSAN_ADDRESS) -O0 -DDEBUG
+DBG_FLAGS := -g $(FSAN_FLAGS) -O0 -DDEBUG
 DBG_OBJS := $(patsubst $(DIR_SRC)/%.c,$(DIR_OBJ_DBG)/%.o,$(SRCS.c)) \
 			$(patsubst $(DIR_SRC)/%.cpp,$(DIR_OBJ_DBG)/%.o,$(SRCS.cpp))
 DIR_PATH_OBJ_DBG := $(dir $(DBG_OBJS))
@@ -69,24 +70,28 @@ DIR_PATH_OBJ_DBG := $(dir $(DBG_OBJS))
 #
 all: release
 
-# Before build, create directories if necessary.
+# Before build setup, create directories if necessary.
 #
-prep:
+setup:
+	@if [ -z "$(SRCS.c)" ] && [ -z "$(SRCS.cpp)" ]; then\
+		echo "/!\ [ERROR] : No source files found";\
+		exit 1;\
+	fi
 	@echo ":: Create project directories ..."
 	@$(MKDIR_P) $(DIR_BIN_REL) $(DIR_BIN_DBG) $(DIR_PATH_OBJ_REL) $(DIR_PATH_OBJ_DBG)
 
 # Release build
 #
-release: prep $(REL_TARGET)
+release: setup $(REL_TARGET)
 
-# Linking for Release target.
+# Link for Release target.
 #
 $(REL_TARGET): $(REL_OBJS)
 	@echo ":: Build '$@' ..."
 	$(LD) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 	@echo "==> Done"
 
-# Compiling source files for Release mode.
+# Compile source files for Release mode.
 #
 $(DIR_OBJ_REL)/%.o: $(DIR_SRC)/%.c
 	@echo ":: Compile '$<' ..."
@@ -98,16 +103,16 @@ $(DIR_OBJ_REL)/%.o: $(DIR_SRC)/%.cpp
 
 # Debug build.
 #
-debug: prep $(DBG_TARGET)
+debug: setup $(DBG_TARGET)
 
-# Linking for Debug mode.
+# Link for Debug mode.
 #
 $(DBG_TARGET): $(DBG_OBJS)
 	@echo ":: Build '$@' ..."
-	$(LD) $(LDFLAGS) $(FSAN_ADDRESS) $^ -o $@ $(LDLIBS)
+	$(LD) $(LDFLAGS) $(FSAN_FLAGS) $^ -o $@ $(LDLIBS)
 	@echo "==> Done"
 
-# Compiling source files for Debug mode.
+# Compile source files for Debug mode.
 #
 $(DIR_OBJ_DBG)/%.o: $(DIR_SRC)/%.c
 	@echo ":: Compile '$<' ..."
