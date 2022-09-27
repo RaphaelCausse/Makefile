@@ -53,7 +53,7 @@ REL_TARGET := $(DIR_BIN_REL)/$(TARGET)
 REL_FLAGS := -O3 -DNDEBUG
 REL_OBJS := $(patsubst $(DIR_SRC)/%.c,$(DIR_OBJ_REL)/%.o,$(SRCS.c)) \
 			$(patsubst $(DIR_SRC)/%.cpp,$(DIR_OBJ_REL)/%.o,$(SRCS.cpp))
-DIR_PATH_OBJ_REL := $(dir $(REL_OBJS))
+DIR_PATH_OBJ_REL := $(sort $(dir $(REL_OBJS)))
 
 # Debug build set up.
 #
@@ -63,7 +63,7 @@ DBG_TARGET := $(DIR_BIN_DBG)/$(TARGET)
 DBG_FLAGS := -g $(FSAN_FLAGS) -O0 -DDEBUG
 DBG_OBJS := $(patsubst $(DIR_SRC)/%.c,$(DIR_OBJ_DBG)/%.o,$(SRCS.c)) \
 			$(patsubst $(DIR_SRC)/%.cpp,$(DIR_OBJ_DBG)/%.o,$(SRCS.cpp))
-DIR_PATH_OBJ_DBG := $(dir $(DBG_OBJS))
+DIR_PATH_OBJ_DBG := $(sort $(dir $(DBG_OBJS)))
 
 
 # Default build, Release mode.
@@ -77,8 +77,10 @@ setup:
 		echo "/!\ [ERROR] : No source files found";\
 		exit 1;\
 	fi
-	@echo ":: Create project directories ..."
-	@$(MKDIR_P) $(DIR_BIN_REL) $(DIR_BIN_DBG) $(DIR_PATH_OBJ_REL) $(DIR_PATH_OBJ_DBG)
+	@if [ ! -z "$(DIR_BIN_REL)" ] || [ ! -z "$(DIR_BIN_DBG)" ] || [ ! -z "$(DIR_PATH_OBJ_REL)" ] || [ ! -z "$(DIR_PATH_OBJ_DBG)" ]; then\
+		echo ":: Create project directories ...";\
+		$(MKDIR_P) $(DIR_BIN_REL) $(DIR_BIN_DBG) $(DIR_PATH_OBJ_REL) $(DIR_PATH_OBJ_DBG);\
+	fi
 
 # Release build
 #
@@ -109,25 +111,25 @@ debug: setup $(DBG_TARGET)
 #
 $(DBG_TARGET): $(DBG_OBJS)
 	@echo ":: Build '$@' ..."
-	$(LD) $(LDFLAGS) $(FSAN_FLAGS) $^ -o $@ $(LDLIBS)
+	@$(LD) $(LDFLAGS) $(FSAN_FLAGS) $^ -o $@ $(LDLIBS)
 	@echo "==> Done"
 
 # Compile source files for Debug mode.
 #
 $(DIR_OBJ_DBG)/%.o: $(DIR_SRC)/%.c
 	@echo ":: Compile '$<' ..."
-	$(CC) $(CFLAGS) $(DBG_FLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(DBG_FLAGS) -c $< -o $@
 
 $(DIR_OBJ_DBG)/%.o: $(DIR_SRC)/%.cpp
 	@echo ":: Compile '$<' ..."
-	$(CXX) $(CXXFLAGS) $(DBG_FLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(DBG_FLAGS) -c $< -o $@
 
 
 # Run release target.
 #
 run:
 	@echo ":: Run '$(REL_TARGET)' ..."
-	./$(REL_TARGET)
+	@./$(REL_TARGET)
 
 # Run debug target.
 #
@@ -139,28 +141,28 @@ run-debug:
 #
 clean:
 	@echo ":: Clean project directory ..."
-	$(RM) $(DIR_BIN) $(DIR_OBJ)
+	@$(RM) $(DIR_BIN) $(DIR_OBJ)
 
 # Display source and object files.
 #
 info:
-	@echo -e "[*] Sources, C:\t\t$(SRCS.c)"
-	@echo -e "[*] Sources, C++:\t$(SRCS.cpp)"
+	@echo "[*] Sources, C:\t\t$(SRCS.c)"
+	@echo "[*] Sources, C++:\t$(SRCS.cpp)"
 	@echo
-	@echo -e "[*] Objects, release:\t$(REL_OBJS)"
-	@echo -e "[*] Target, release:\t$(REL_TARGET)"
+	@echo "[*] Objects, release:\t$(REL_OBJS)"
+	@echo "[*] Target, release:\t$(REL_TARGET)"
 	@echo
-	@echo -e "[*] Objects, debug:\t$(DBG_OBJS)"
-	@echo -e "[*] Target, debug:\t$(DBG_TARGET)"
+	@echo "[*] Objects, debug:\t$(DBG_OBJS)"
+	@echo "[*] Target, debug:\t$(DBG_TARGET)"
 
 # Display usage help. 
 #
 help:
 	@echo "USAGE:"
-	@echo -e "\tmake \t\t\tBuild project, in Release mode by default."
-	@echo -e "\tmake debug \t\tBuild project in Debug mode."
-	@echo -e "\tmake run \t\tRun target, by default Release target."
-	@echo -e "\tmake run-debug \tRun Debug target."
-	@echo -e "\tmake clean \t\tClean project directory."
-	@echo -e "\tmake info \t\tDisplay info about files in project directory."
-	@echo -e "\tmake help \t\tDisplay this help message."
+	@echo "\tmake \t\t\tBuild project, in Release mode by default."
+	@echo "\tmake debug \t\tBuild project in Debug mode."
+	@echo "\tmake run \t\tRun target, by default Release target."
+	@echo "\tmake run-debug \t\tRun Debug target."
+	@echo "\tmake clean \t\tClean project directory."
+	@echo "\tmake info \t\tDisplay info about files in project directory."
+	@echo "\tmake help \t\tDisplay this help message."
