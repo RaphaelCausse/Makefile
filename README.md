@@ -15,10 +15,10 @@ By default, the building process is in Release mode.
 
 # Table of Contents
  
-- [Project layout](##project-directory-layout)
-- [Installation](##installation)
-- [Usage](##usage)
-- [Features](##features)
+- [Project Directory Layout](#project-directory-layout)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Features](#features)
 
 <br>
 
@@ -32,20 +32,10 @@ To use this generic makefile properly, please follow this project directory layo
   ├──── README.md
   ├──── LICENSE.md
   │
-  ├──┬─[ bin ]
-  │  ├──┬─[ debug ]
-  │  │  └──── app
-  │  └──┬─[ release ]
-  │     └──── app
   │
   ├──┬─[ include ]
   │  └──── *.h / *.hpp
   │
-  ├──┬─[ obj ]
-  │  ├──┬─[ debug ]
-  │  │  └──── *.o
-  │  └──┬─[ release ]
-  │     └──── *.o
   │
   ├──┬─[ src ]
   │  ├──── main.c / main.cpp
@@ -56,9 +46,6 @@ To use this generic makefile properly, please follow this project directory layo
   │
   └────...
 ```
-**_NOTE:_**<br>
-`bin` and `obj` directories and their subdirectories are not mandatory, they are created if they don't exist.
-
 <br>
 
 ## INSTALLATION
