@@ -90,18 +90,18 @@ release: setup $(REL_TARGET)
 #
 $(REL_TARGET): $(REL_OBJS)
 	@echo ":: Build '$@' ..."
-	$(LD) $(LDFLAGS) $^ -o $@ $(LDLIBS)
+	@$(LD) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 	@echo "==> Done"
 
 # Compile source files for Release mode.
 #
 $(DIR_OBJ_REL)/%.o: $(DIR_SRC)/%.c
 	@echo ":: Compile '$<' ..."
-	$(CC) $(CFLAGS) $(REL_FLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(REL_FLAGS) -c $< -o $@
 
 $(DIR_OBJ_REL)/%.o: $(DIR_SRC)/%.cpp
 	@echo ":: Compile '$<' ..."
-	$(CXX) $(CXXFLAGS) $(REL_FLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(REL_FLAGS) -c $< -o $@
 
 # Debug build.
 #
@@ -135,7 +135,7 @@ run:
 #
 run-debug:
 	@echo ":: Run '$(DBG_TARGET)' ..."
-	./$(DBG_TARGET)
+	@./$(DBG_TARGET)
 
 # Remove target and object files.
 #
