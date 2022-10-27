@@ -3,13 +3,13 @@
 
 # GENERIC MAKEFILE
 
-Generic Makefile for small to medium sized C/C++ projects.
+Generic Makefile for small to medium sized C/C++ projects (OS Linux only).
 
 The Makefile assumes source code is broken up in two groups, header files (.h/.hpp) and implementation files (.c/.cpp).
 
 You can build the project in two modes: Release or Debug.
 
-By default, the building process is in Release mode.
+By default, the build is in Release mode.
 
 <br>
 
@@ -42,9 +42,10 @@ To use this generic makefile properly, please follow this project directory layo
   │  ├──── *.c / *.cpp
   │  ├──┬─[ modules ]
   │  │  └──── *.c / *.cpp
-  │  └────...
+  │  ...
   │
-  └────...
+  │
+  ...
 ```
 <br>
 
@@ -67,8 +68,10 @@ cd Generic-makefile
 **Build** the project (default is Release mode):
 ```bash
 make
+make all
+make release
 ```
-or **build** the project in Debug mode:
+**Build** the project in Debug mode:
 ```bash
 make debug
 ```
@@ -78,7 +81,7 @@ make run
 ```
 or **run** the Debug target:
 ```bash
-make run-debug
+make rundbg
 ```
 
 <br>
