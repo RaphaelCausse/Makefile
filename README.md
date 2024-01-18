@@ -2,9 +2,9 @@
 [![OS](https://img.shields.io/badge/os-windows-blue.svg)](https://shields.io/)
 [![Status](https://img.shields.io/badge/status-completed-success.svg)](https://shields.io/)
 
-# GENERIC MAKEFILE
+# MAKEFILE C/C++
 
-Generic Makefile for small to medium sized C/C++ projects, for Linux and Windows.
+Makefile template for small to medium sized C/C++ projects, for Linux and Windows.
 
 You can build the project in two modes: Release or Debug.
 

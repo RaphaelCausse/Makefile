@@ -1,8 +1,6 @@
 #ifndef _TEST_H_
 #define _TEST_H_
 
-#include <stdio.h>
-#include <string.h>
 
 #ifdef _WIN32
    #define OS "Windows 32-bits"
@@ -16,6 +14,8 @@
     #define OS "OS_unknown"
 #endif
 
+
 extern void test_print();
+
 
 #endif /* _TEST_H_ */
