@@ -59,11 +59,11 @@ To use this generic makefile properly, please follow this project directory layo
 
 **Clone** this repository:
 ```
-git clone https://github.com/RaphaelCausse/Generic-makefile.git
+git clone https://github.com/RaphaelCausse/Makefile_C_Cpp.git
 ```
 **Move** to the cloned directory :
 ```
-cd Generic-makefile
+cd Makefile_C_Cpp
 ```
 **Copy** the Makefile in your project.
 
@@ -80,7 +80,6 @@ make release
 ```
 make debug
 ```
-
 <br>
 
 ## FEATURES
