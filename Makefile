@@ -9,8 +9,6 @@ TARGET_NAME := prog
 
 ifeq ($(OS),Windows_NT)
 TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
-else
-TARGET_NAME := $(addsuffix .out,$(TARGET_NAME))
 endif
 
 
@@ -163,7 +161,11 @@ endif
 .PHONY: release_info release
 release_info:
 	@echo ====================== Build Release =======================
+ifeq ($(OS),Windows_NT)
 	@echo [+] Building project in Release mode "$(RELEASE_TARGET)"...
+else
+	@echo "[+] Building project in Release mode '$(RELEASE_TARGET)'..."
+endif
 
 release: check_directories release_info $(RELEASE_TARGET)
 	@echo [+] OK
@@ -171,7 +173,7 @@ release: check_directories release_info $(RELEASE_TARGET)
 ifeq ($(OS),Windows_NT)
 	@echo [?] Type ".\$(subst /,\,$(RELEASE_TARGET))" to exectue the program.
 else
-	@echo [?] Type "./$(RELEASE_TARGET)" to exectue the program.
+	@echo "[?] Type './$(RELEASE_TARGET)' to exectue the program."
 endif
 	@echo ============================================================
 
@@ -221,7 +223,11 @@ endif
 .PHONY: debug_info debug
 debug_info:
 	@echo ======================= Build Debug ========================
-	@echo [+] Building project in Debug mode "$(DEBUG_TARGET)"...
+ifeq ($(OS),Windows_NT)
+	@echo [+] Building project in Release mode "$(RELEASE_TARGET)"...
+else
+	@echo "[+] Building project in Debug mode '$(DEBUG_TARGET)'..."
+endif
 
 debug: check_directories debug_info $(DEBUG_TARGET)
 	@echo [+] OK
@@ -229,13 +235,17 @@ debug: check_directories debug_info $(DEBUG_TARGET)
 ifeq ($(OS),Windows_NT)
 	@echo [?] Type ".\$(subst /,\,$(DEBUG_TARGET))" to exectue the program.
 else
-	@echo [?] Type "./$(DEBUG_TARGET)" to exectue the program.
+	@echo "[?] Type './$(DEBUG_TARGET)' to exectue the program."
 endif
 	@echo ============================================================
 
 # Link for Debug mode.
 $(DEBUG_TARGET): $(DEBUG_OBJS)
-	@echo [.]   Linking Release objects
+ifeq ($(OS),Windows_NT)
+	@echo [.]   Linking Debug objects
+else
+	@echo "[.]   Linking Debug objects"
+endif
 ifeq ($(SRC_FILES.cxx),)
 	@$(LINK.c) $^ $(EXTRA_LDFLAGS) $(DEBUG_FLAGS) -o $@
 else
@@ -320,15 +330,21 @@ ifeq ($(OS),Windows_NT)
 else
 	@echo "[+] C source files (.c) :"
 	@echo "[.]   $(SRC_FILES.c)"
-	@echo [.] --------------------------------------------------------
+	@echo [.]---------------------------------------------------------
 	@echo "[+] C++ source files (.cpp) :"
 	@echo "[.]   $(SRC_FILES.cxx)"
-	@echo [.] --------------------------------------------------------
+	@echo [.]---------------------------------------------------------
 	@echo [+] Object files, Release :
 	@echo "[.]   $(RELEASE_OBJS)"
-	@echo [.] --------------------------------------------------------
+	@echo [.]---------------------------------------------------------
 	@echo [+] Object files, Debug :
 	@echo "[.]   $(DEBUG_OBJS)"
+	@echo [.]---------------------------------------------------------
+	@echo [+] Target, Release :
+	@echo "[.]   $(RELEASE_TARGET)"
+	@echo [.]---------------------------------------------------------
+	@echo [+] Target, Debug :
+	@echo "[.]   $(DEBUG_TARGET)"
 endif
 	@echo ============================================================
 
@@ -346,13 +362,13 @@ ifeq ($(OS),Windows_NT)
 	@echo     make help        Display this help message.
 else
 	@echo "Usage:"
-	@echo -e "\tmake \t\t\tBuild project, in Release mode by default."
-	@echo -e "\tmake release \t\t\tBuild project, in Release mode."
-	@echo -e "\tmake debug \t\tBuild project, in Debug mode."
-	@echo -e "\tmake clean \t\tClean project directory."
-	@echo -e "\tmake info \t\tDisplay info about files in project directory."
-	@echo -e "\tmake version \t\tDisplay compiler version."
-	@echo -e "\tmake help \t\tDisplay this help message."
+	@echo -e "\tmake \t\tBuild project, in Release mode by default."
+	@echo -e "\tmake release \tBuild project, in Release mode."
+	@echo -e "\tmake debug \tBuild project, in Debug mode."
+	@echo -e "\tmake clean \tClean project directory."
+	@echo -e "\tmake info \tDisplay info about files in project directory."
+	@echo -e "\tmake version \tDisplay compiler version."
+	@echo -e "\tmake help \tDisplay this help message."
 endif
 
 
