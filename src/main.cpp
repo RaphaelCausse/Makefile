@@ -1,6 +1,11 @@
 #include <iostream>
-#include <winsock2.h>
 #include "test/test.h"
+#ifdef _WIN32
+    #include <winsock2.h>
+#else
+    #include <arpa/inet.h>
+#endif
+
 
 
 int main(int argc, char *argv[])

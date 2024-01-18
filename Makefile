@@ -8,9 +8,9 @@
 TARGET_NAME := prog
 
 ifeq ($(OS),Windows_NT)
-	TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
+TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
 else
-	TARGET_NAME := $(addsuffix .out,$(TARGET_NAME))
+TARGET_NAME := $(addsuffix .out,$(TARGET_NAME))
 endif
 
 
@@ -100,11 +100,11 @@ DEBUG_OBJS		:= $(addprefix $(DIR_BUILD_DEBUG)/,$(OBJ_FILES))
 ################## SHELL ##################
 
 ifeq ($(OS),Windows_NT)
-	MKDIR_P := mkdir
-	RM_RF 	:= rmdir /S/Q
+MKDIR_P := mkdir
+RM_RF 	:= rmdir /S/Q
 else
-	MKDIR_P := mkdir -p
-	RM_RF 	:= rm -rf
+MKDIR_P := mkdir -p
+RM_RF 	:= rm -rf
 endif
 
 
@@ -120,32 +120,35 @@ check_directories:
 	@echo ======================= Directories ========================
 	@echo [+] Checking project directories...
 ifeq ($(filter $(DIR_BUILD_RELEASE),$(wildcard $(DIR_BUILD)/*)),)
-	@echo [.]   Creating directory "$(DIR_BUILD_RELEASE)".
 ifeq ($(OS),Windows_NT)
+	@echo [.]   Creating directory "$(DIR_BUILD_RELEASE)".
 	@$(MKDIR_P) $(subst /,\,$(DIR_BUILD_RELEASE))
 else
+	@echo "[.]   Creating directory $(DIR_BUILD_RELEASE)".
 	@$(MKDIR_P) $(DIR_BUILD_RELEASE)
 endif
 endif
 ifeq ($(filter $(DIR_BUILD_DEBUG),$(wildcard $(DIR_BUILD)/*)),)
-	@echo [.]   Creating directory "$(DIR_BUILD_DEBUG)".
 ifeq ($(OS),Windows_NT)
+	@echo [.]   Creating directory "$(DIR_BUILD_DEBUG)".
 	@$(MKDIR_P) $(subst /,\,$(DIR_BUILD_DEBUG))
 else
+	@echo "[.]   Creating directory $(DIR_BUILD_DEBUG)".
 	@$(MKDIR_P) $(DIR_BUILD_DEBUG)
 endif
 endif
 ifeq ($(filter $(DIR_BIN_RELEASE),$(wildcard $(DIR_BIN)/*)),)
-	@echo [.]   Creating directory "$(DIR_BIN_RELEASE)".
 ifeq ($(OS),Windows_NT)
+	@echo [.]   Creating directory "$(DIR_BIN_RELEASE)".
 	@$(MKDIR_P) $(subst /,\,$(DIR_BIN_RELEASE))
 else
+	@echo "[.]   Creating directory $(DIR_BIN_RELEASE)".
 	@$(MKDIR_P) $(DIR_BIN_RELEASE)
 endif
 endif
 ifeq ($(filter $(DIR_BIN_DEBUG),$(wildcard $(DIR_BIN)/*)),)
-	@echo [.]   Creating directory "$(DIR_BIN_DEBUG)".
 ifeq ($(OS),Windows_NT)
+	@echo "[.]   Creating directory $(DIR_BIN_DEBUG)".
 	@$(MKDIR_P) $(subst /,\,$(DIR_BIN_DEBUG))
 else
 	@$(MKDIR_P) $(DIR_BIN_DEBUG)
@@ -173,7 +176,11 @@ endif
 
 # Link for Release target.
 $(RELEASE_TARGET): $(RELEASE_OBJS)
+ifeq ($(OS),Windows_NT)
 	@echo [.]   Linking Release objects
+else
+	@echo "[.]   Linking Release objects"
+endif
 ifeq ($(SRC_FILES.cxx),)
 	@$(LINK.c) $^ $(EXTRA_LDFLAGS) $(RELEASE_FLAGS) -o $@
 else
@@ -186,11 +193,12 @@ ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
 		echo [.]   Creating directory "$(dir $@)" && $(MKDIR_P) "$(subst /,\,$(dir $@))" \
 	)
-else
-	@echo [.]   Creating directory "$(dir $@)"
-	@$(MKDIR_P) $(dir $@)
-endif
 	@echo [.]   Compiling "$<"
+else
+	@echo "[.]   Creating directory $(dir $@)"
+	@$(MKDIR_P) $(dir $@)
+	@echo "[.]   Compiling $<"
+endif
 	@$(COMPILE.c) $< $(RELEASE_FLAGS) -o $@
 
 # Compile C++ source files for Release mode.
@@ -199,11 +207,12 @@ ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
 		echo [.]   Creating directory "$(dir $@)" && $(MKDIR_P) "$(subst /,\,$(dir $@))" \
 	)
-else
-	@echo [.]   Creating directory "$(dir $@)"
-	@$(MKDIR_P) $(dir $@)
-endif
 	@echo [.]   Compiling "$<"
+else
+	@echo "[.]   Creating directory $(dir $@)"
+	@$(MKDIR_P) $(dir $@)
+	@echo "[.]   Compiling $<"
+endif
 	@$(COMPILE.cxx) $< $(RELEASE_FLAGS) -o $@
 
 
@@ -238,11 +247,12 @@ ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
 		echo [.]   Creating directory "$(dir $@)" && $(MKDIR_P) "$(subst /,\,$(dir $@))" \
 	)
-else
-	@echo [.]   Creating directory "$(dir $@)"
-	@$(MKDIR_P) $(dir $@)
-endif
 	@echo [.]   Compiling "$<"
+else
+	@echo "[.]   Creating directory $(dir $@)"
+	@$(MKDIR_P) $(dir $@)
+	@echo "[.]   Compiling $<"
+endif
 	@$(COMPILE.c) $< $(DEBUG_FLAGS) -o $@
 
 # Compile C++ source files for Debug mode.
@@ -251,11 +261,12 @@ ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
 		echo [.]   Creating directory "$(dir $@)" && $(MKDIR_P) "$(subst /,\,$(dir $@))" \
 	)
-else
-	@echo [.]   Creating directory "$(dir $@)"
-	@$(MKDIR_P) $(dir $@)
-endif
 	@echo [.]   Compiling "$<"
+else
+	@echo "[.]   Creating directory $(dir $@)"
+	@$(MKDIR_P) $(dir $@)
+	@echo "[.]   Compiling $<"
+endif
 	@$(COMPILE.cxx) $< $(DEBUG_FLAGS) -o $@
 
 
@@ -264,11 +275,19 @@ clean:
 	@echo ====================== Clean project =======================
 	@echo [+] Cleaning project...
 ifeq ($(filter $(DIR_BUILD),$(wildcard *)),$(DIR_BUILD))
+ifeq ($(OS),Windows_NT)
 	@echo [.]   Deleting directory "$(DIR_BUILD)"
+else
+	@echo "[.]   Deleting directory $(DIR_BUILD)"
+endif
 	@$(RM_RF) $(DIR_BUILD)
 endif
 ifeq ($(filter $(DIR_BIN),$(wildcard *)),$(DIR_BIN))
+ifeq ($(OS),Windows_NT)
 	@echo [.]   Deleting directory "$(DIR_BIN)"
+else
+	@echo "[.]   Deleting directory $(DIR_BIN)"
+endif
 	@$(RM_RF) $(DIR_BIN)
 endif
 	@echo [+] OK
@@ -278,13 +297,18 @@ endif
 # Display source and object files.
 info:
 	@echo ========================= Project ==========================
+ifeq ($(OS),Windows_NT)
 	@echo [?] OS : $(OS)
+else
+	@echo [?] OS : $(shell uname)
+endif
 	@echo [?] Target : $(TARGET_NAME)
 	@echo ============================================================
-	@echo [+] C source files (.c) :
+ifeq ($(OS),Windows_NT)
+	@echo [+] C source files [.c] :
 	@echo [.]   $(SRC_FILES.c)
 	@echo [.] --------------------------------------------------------
-	@echo [+] C++ source files (.cpp) :
+	@echo [+] C++ source files [.cpp] :
 	@echo [.]   $(SRC_FILES.cxx)
 	@echo [.] --------------------------------------------------------
 	@echo [+] Object files, Release :
@@ -292,12 +316,35 @@ info:
 	@echo [.] --------------------------------------------------------
 	@echo [+] Object files, Debug :
 	@echo [.]   $(DEBUG_OBJS)
+else
+	@echo [+] C source files [.c] :
+	@echo "[.]   $(SRC_FILES.c)"
+	@echo [.] --------------------------------------------------------
+	@echo [+] C++ source files [.cpp] :
+	@echo "[.]   $(SRC_FILES.cxx)"
+	@echo [.] --------------------------------------------------------
+	@echo [+] Object files, Release :
+	@echo "[.]   $(RELEASE_OBJS)"
+	@echo [.] --------------------------------------------------------
+	@echo [+] Object files, Debug :
+	@echo "[.]   $(DEBUG_OBJS)"
+endif
 	@echo ============================================================
 
 
 # Display usage help.
 help:
-	@echo "USAGE:"
+ifeq ($(OS),Windows_NT)
+	@echo Usage:
+	@echo     make             Build project, in Release mode by default.
+	@echo     make release     Build project, in Release mode.
+	@echo     make debug       Build project, in Debug mode.
+	@echo     make clean       Clean project directory.
+	@echo     make info        Display info about files in project directory.
+	@echo     make version     Display compiler version.
+	@echo     make help        Display this help message.
+else
+	@echo "Usage:"
 	@echo -e "\tmake \t\t\tBuild project, in Release mode by default."
 	@echo -e "\tmake release \t\t\tBuild project, in Release mode."
 	@echo -e "\tmake debug \t\tBuild project, in Debug mode."
@@ -305,6 +352,7 @@ help:
 	@echo -e "\tmake info \t\tDisplay info about files in project directory."
 	@echo -e "\tmake version \t\tDisplay compiler version."
 	@echo -e "\tmake help \t\tDisplay this help message."
+endif
 
 
 ## Version info
