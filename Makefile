@@ -121,36 +121,37 @@ check_directories:
 	@echo [+] Checking project directories...
 ifeq ($(filter $(DIR_BUILD_RELEASE),$(wildcard $(DIR_BUILD)/*)),)
 ifeq ($(OS),Windows_NT)
-	@echo [.]   Creating directory "$(DIR_BUILD_RELEASE)".
+	@echo [.]   Creating directory "$(DIR_BUILD_RELEASE)"
 	@$(MKDIR_P) $(subst /,\,$(DIR_BUILD_RELEASE))
 else
-	@echo "[.]   Creating directory $(DIR_BUILD_RELEASE)".
+	@echo "[.]   Creating directory '$(DIR_BUILD_RELEASE)'"
 	@$(MKDIR_P) $(DIR_BUILD_RELEASE)
 endif
 endif
 ifeq ($(filter $(DIR_BUILD_DEBUG),$(wildcard $(DIR_BUILD)/*)),)
 ifeq ($(OS),Windows_NT)
-	@echo [.]   Creating directory "$(DIR_BUILD_DEBUG)".
+	@echo [.]   Creating directory "$(DIR_BUILD_DEBUG)"
 	@$(MKDIR_P) $(subst /,\,$(DIR_BUILD_DEBUG))
 else
-	@echo "[.]   Creating directory $(DIR_BUILD_DEBUG)".
+	@echo "[.]   Creating directory '$(DIR_BUILD_DEBUG)'"
 	@$(MKDIR_P) $(DIR_BUILD_DEBUG)
 endif
 endif
 ifeq ($(filter $(DIR_BIN_RELEASE),$(wildcard $(DIR_BIN)/*)),)
 ifeq ($(OS),Windows_NT)
-	@echo [.]   Creating directory "$(DIR_BIN_RELEASE)".
+	@echo [.]   Creating directory "$(DIR_BIN_RELEASE)"
 	@$(MKDIR_P) $(subst /,\,$(DIR_BIN_RELEASE))
 else
-	@echo "[.]   Creating directory $(DIR_BIN_RELEASE)".
+	@echo "[.]   Creating directory '$(DIR_BIN_RELEASE)'"
 	@$(MKDIR_P) $(DIR_BIN_RELEASE)
 endif
 endif
 ifeq ($(filter $(DIR_BIN_DEBUG),$(wildcard $(DIR_BIN)/*)),)
 ifeq ($(OS),Windows_NT)
-	@echo "[.]   Creating directory $(DIR_BIN_DEBUG)".
+	@echo [.]   Creating directory "$(DIR_BIN_DEBUG)"
 	@$(MKDIR_P) $(subst /,\,$(DIR_BIN_DEBUG))
 else
+	@echo "[.]   Creating directory '$(DIR_BIN_DEBUG)'"
 	@$(MKDIR_P) $(DIR_BIN_DEBUG)
 endif
 endif
@@ -168,9 +169,9 @@ release: check_directories release_info $(RELEASE_TARGET)
 	@echo [+] OK
 	@echo ============================================================
 ifeq ($(OS),Windows_NT)
-	@echo [?] Type .$(subst /,\,\$(RELEASE_TARGET)) to exectue the program.
+	@echo [?] Type ".\$(subst /,\,$(RELEASE_TARGET))" to exectue the program.
 else
-	@echo [?] Type ./$(RELEASE_TARGET) to exectue the program.
+	@echo [?] Type "./$(RELEASE_TARGET)" to exectue the program.
 endif
 	@echo ============================================================
 
@@ -195,9 +196,9 @@ ifeq ($(OS),Windows_NT)
 	)
 	@echo [.]   Compiling "$<"
 else
-	@echo "[.]   Creating directory $(dir $@)"
+	@echo "[.]   Creating directory '$(dir $@)'"
 	@$(MKDIR_P) $(dir $@)
-	@echo "[.]   Compiling $<"
+	@echo "[.]   Compiling '$<'"
 endif
 	@$(COMPILE.c) $< $(RELEASE_FLAGS) -o $@
 
@@ -209,9 +210,9 @@ ifeq ($(OS),Windows_NT)
 	)
 	@echo [.]   Compiling "$<"
 else
-	@echo "[.]   Creating directory $(dir $@)"
+	@echo "[.]   Creating directory '$(dir $@)'"
 	@$(MKDIR_P) $(dir $@)
-	@echo "[.]   Compiling $<"
+	@echo "[.]   Compiling '$<'"
 endif
 	@$(COMPILE.cxx) $< $(RELEASE_FLAGS) -o $@
 
@@ -226,9 +227,9 @@ debug: check_directories debug_info $(DEBUG_TARGET)
 	@echo [+] OK
 	@echo ============================================================
 ifeq ($(OS),Windows_NT)
-	@echo [?] Type .$(subst /,\,\$(DEBUG_TARGET)) to exectue the program.
+	@echo [?] Type ".\$(subst /,\,$(DEBUG_TARGET))" to exectue the program.
 else
-	@echo [?] Type ./$(DEBUG_TARGET) to exectue the program.
+	@echo [?] Type "./$(DEBUG_TARGET)" to exectue the program.
 endif
 	@echo ============================================================
 
@@ -249,9 +250,9 @@ ifeq ($(OS),Windows_NT)
 	)
 	@echo [.]   Compiling "$<"
 else
-	@echo "[.]   Creating directory $(dir $@)"
+	@echo "[.]   Creating directory '$(dir $@)'"
 	@$(MKDIR_P) $(dir $@)
-	@echo "[.]   Compiling $<"
+	@echo "[.]   Compiling '$<'"
 endif
 	@$(COMPILE.c) $< $(DEBUG_FLAGS) -o $@
 
@@ -263,9 +264,9 @@ ifeq ($(OS),Windows_NT)
 	)
 	@echo [.]   Compiling "$<"
 else
-	@echo "[.]   Creating directory $(dir $@)"
+	@echo "[.]   Creating directory '$(dir $@)'"
 	@$(MKDIR_P) $(dir $@)
-	@echo "[.]   Compiling $<"
+	@echo "[.]   Compiling '$<'"
 endif
 	@$(COMPILE.cxx) $< $(DEBUG_FLAGS) -o $@
 
@@ -278,7 +279,7 @@ ifeq ($(filter $(DIR_BUILD),$(wildcard *)),$(DIR_BUILD))
 ifeq ($(OS),Windows_NT)
 	@echo [.]   Deleting directory "$(DIR_BUILD)"
 else
-	@echo "[.]   Deleting directory $(DIR_BUILD)"
+	@echo "[.]   Deleting directory '$(DIR_BUILD)'"
 endif
 	@$(RM_RF) $(DIR_BUILD)
 endif
@@ -286,7 +287,7 @@ ifeq ($(filter $(DIR_BIN),$(wildcard *)),$(DIR_BIN))
 ifeq ($(OS),Windows_NT)
 	@echo [.]   Deleting directory "$(DIR_BIN)"
 else
-	@echo "[.]   Deleting directory $(DIR_BIN)"
+	@echo "[.]   Deleting directory '$(DIR_BIN)'"
 endif
 	@$(RM_RF) $(DIR_BIN)
 endif
@@ -305,10 +306,10 @@ endif
 	@echo [?] Target : $(TARGET_NAME)
 	@echo ============================================================
 ifeq ($(OS),Windows_NT)
-	@echo [+] C source files [.c] :
+	@echo [+] C source files (.c) :
 	@echo [.]   $(SRC_FILES.c)
 	@echo [.] --------------------------------------------------------
-	@echo [+] C++ source files [.cpp] :
+	@echo [+] C++ source files (.cpp) :
 	@echo [.]   $(SRC_FILES.cxx)
 	@echo [.] --------------------------------------------------------
 	@echo [+] Object files, Release :
@@ -317,10 +318,10 @@ ifeq ($(OS),Windows_NT)
 	@echo [+] Object files, Debug :
 	@echo [.]   $(DEBUG_OBJS)
 else
-	@echo [+] C source files [.c] :
+	@echo "[+] C source files (.c) :"
 	@echo "[.]   $(SRC_FILES.c)"
 	@echo [.] --------------------------------------------------------
-	@echo [+] C++ source files [.cpp] :
+	@echo "[+] C++ source files (.cpp) :"
 	@echo "[.]   $(SRC_FILES.cxx)"
 	@echo [.] --------------------------------------------------------
 	@echo [+] Object files, Release :
