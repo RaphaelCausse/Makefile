@@ -28,7 +28,7 @@ Please follow recommended project layout.
 
 ## PROJECT LAYOUT
 
-To use this generic makefile properly, please follow this project directory layout.
+To use this makefile template properly, please follow this project directory layout.
 ```
 ──┬─[ Project ]
   │
@@ -40,7 +40,7 @@ To use this generic makefile properly, please follow this project directory layo
   │  └──── *.o
   │
   ├──┬─[ src ]
-  │  ├──── sources.mk
+  │  ├──── sources.mk   # Important: declare in that file all the source files 
   │  │
   │  ├──── main.c / main.cpp
   │  ├──── *.c / *.cpp

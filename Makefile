@@ -1,10 +1,11 @@
 ###########################################
-# Generic Makefile for C/C++ projects.
+# Makefile template for C/C++ projects.
 # Please follow recommended project layout in README.
-# Author	: Raphael CAUSSE
-# Date   	: 08/2022
+# Author : Raphael CAUSSE
+# Date : 08/2022
 ###########################################
 
+# Target executable name
 TARGET_NAME := prog
 
 ifeq ($(OS),Windows_NT)
@@ -22,8 +23,8 @@ DIR_SRC 	:= src
 # Include directories
 INCLUDES 	:= src
 
-# OS specific includes
-INCLUDES_LINUX 	 := 
+# OS specific includes. Might defer depending your system configuration.
+INCLUDES_LINUX	 := 
 INCLUDES_WINDOWS := C:/MinGW/include \
 					C:/MinGW/mingw32/lib \
 					C:/MinGW/mingw32/include \
@@ -36,11 +37,11 @@ INCLUDES += $(INCLUDES_LINUX)
 endif
 
 # Link libraries
-LIBS 		:=
+LIBS		:=
 
 # OS specific libraries
-LIBS_LINUX 	 := 
-LIBS_WINDOWS := ws2_32
+LIBS_LINUX  	:= m
+LIBS_WINDOWS	:= ws2_32
 
 ifeq ($(OS),Windows_NT)
 LIBS += $(LIBS_WINDOWS)
@@ -52,26 +53,25 @@ endif
 ################ COMPILER ################
 
 # Compiler and linker.
-CC 		:= gcc
-CXX 	:= g++
+CC      := gcc --std=c99
+CXX     := g++
 
-# Comment this line if you are using only C or only C++.
-# Un-comment this line if you are using both C and C++.
+# Comment this line if you are using only C or only C++. Un-comment this line if you are using both C and C++.
 # CC 		= $(CXX)
 
 # Extra Compiler options, applies to both C and C++ compiling as well as LD.
-EXTRA_CFLAGS 	= 
+EXTRA_CFLAGS    =
 # Extra Linker options (e.g. -lm)
-EXTRA_LDFLAGS 	= $(addprefix -l,$(LIBS))
+EXTRA_LDFLAGS   = $(addprefix -l,$(LIBS))
 
 # C Preprocessor options 
-CPPFLAGS 		= -Wall -Wextra -Wpedantic $(addprefix -I,$(INCLUDES))
+CPPFLAGS        = -Wall -Wextra -Wpedantic $(addprefix -I,$(INCLUDES))
 
 # Shortcuts for compiler and linker
-COMPILE.c 		= $(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c
-COMPILE.cxx 	= $(CXX) $(CXXFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c
-LINK.c 			= $(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(LDFLAGS)
-LINK.cxx 		= $(CXX) $(CXXFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+COMPILE.c       = $(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c
+COMPILE.cxx     = $(CXX) $(CXXFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c
+LINK.c          = $(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+LINK.cxx        = $(CXX) $(CXXFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 
 
 # Source files and object files set up.
@@ -92,17 +92,17 @@ DIR_BIN_DEBUG 		:= $(DIR_BIN)/debug
 DIR_BUILD_DEBUG 	:= $(DIR_BUILD)/debug
 DEBUG_TARGET 		:= $(DIR_BIN_DEBUG)/$(TARGET_NAME)
 DEBUG_FLAGS 		:= -O0 -g3
-DEBUG_OBJS		:= $(addprefix $(DIR_BUILD_DEBUG)/,$(OBJ_FILES))
+DEBUG_OBJS     		:= $(addprefix $(DIR_BUILD_DEBUG)/,$(OBJ_FILES))
 
 
 ################## SHELL ##################
 
 ifeq ($(OS),Windows_NT)
 MKDIR_P := mkdir
-RM_RF 	:= rmdir /S/Q
+RM_RF   := rmdir /S/Q
 else
 MKDIR_P := mkdir -p
-RM_RF 	:= rm -rf
+RM_RF   := rm -rf
 endif
 
 
