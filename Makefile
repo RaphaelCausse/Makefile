@@ -20,29 +20,26 @@ DIR_BIN 	:= bin
 DIR_BUILD 	:= build
 DIR_SRC 	:= src
 
-# Include directories
-INCLUDES 	:= src
+# Sources list file .mk
+SOURCES_FILE_MK := sources.mk
 
+
+# Include directories to indicate where to search for header files
+INCLUDES 	:= src
 # OS specific includes. Might defer depending your system configuration.
 INCLUDES_LINUX	 := 
-INCLUDES_WINDOWS := C:/MinGW/include \
-					C:/MinGW/mingw32/lib \
-					C:/MinGW/mingw32/include \
-					C:/MinGW/lib/gcc/mingw32/6.3.0/include
-
+INCLUDES_WINDOWS := 
 ifeq ($(OS),Windows_NT)
 INCLUDES += $(INCLUDES_WINDOWS)
 else
 INCLUDES += $(INCLUDES_LINUX)
 endif
 
-# Link libraries
-LIBS		:=
-
+# Link libraries (e.g. libm -> m)
+LIBS			:= m
 # OS specific libraries
-LIBS_LINUX  	:= m
-LIBS_WINDOWS	:= ws2_32
-
+LIBS_LINUX  	:= 
+LIBS_WINDOWS	:= 
 ifeq ($(OS),Windows_NT)
 LIBS += $(LIBS_WINDOWS)
 else
@@ -56,16 +53,18 @@ endif
 CC      := gcc --std=c99
 CXX     := g++
 
-# Comment this line if you are using only C or only C++. Un-comment this line if you are using both C and C++.
+# /!\ Comment this line if you are using only C or only C++. Un-comment this line if you are using both C and C++.
 # CC 		= $(CXX)
 
+# C Preprocessor options, to include directories
+CPPFLAGS        = $(addprefix -I,$(INCLUDES))
+
 # Extra Compiler options, applies to both C and C++ compiling as well as LD.
-EXTRA_CFLAGS    =
-# Extra Linker options (e.g. -lm)
+EXTRA_CFLAGS    = -Wall -Wextra -Wpedantic
+
+# Extra Linker options for libraries linkage
 EXTRA_LDFLAGS   = $(addprefix -l,$(LIBS))
 
-# C Preprocessor options 
-CPPFLAGS        = -Wall -Wextra -Wpedantic $(addprefix -I,$(INCLUDES))
 
 # Shortcuts for compiler and linker
 COMPILE.c       = $(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c
@@ -75,10 +74,10 @@ LINK.cxx        = $(CXX) $(CXXFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 
 
 # Source files and object files set up.
-include $(DIR_SRC)/sources.mk
-SRC_FILES.c := $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
+-include $(DIR_SRC)/$(SOURCES_FILE_MK)
+SRC_FILES.c   := $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
 SRC_FILES.cxx := $(filter %.cpp,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
-OBJ_FILES := $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
+OBJ_FILES     := $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
 
 # Release build set up. 
 DIR_BIN_RELEASE 	:= $(DIR_BIN)/release
@@ -110,6 +109,43 @@ endif
 
 # Default build, Release mode.
 default: release
+
+
+# Initialize project layout
+.PHONY: init
+init:
+	@echo ======================== Initialize ========================
+	@echo [+] Initialize project layout...
+ifeq ($(filter $(DIR_SRC),$(wildcard *)),)
+ifeq ($(OS),Windows_NT)
+	@echo [.]   Creating directory "$(DIR_SRC)"
+	@$(MKDIR_P) $(subst /,\,$(DIR_SRC))
+else
+	@echo "[.]   Creating directory '$(DIR_SRC)'"
+	@$(MKDIR_P) $(DIR_SRC)
+endif
+endif
+ifeq ($(filter $(DIR_SRC)/$(SOURCES_FILE_MK),$(wildcard $(DIR_SRC)/*)),)
+ifeq ($(OS),Windows_NT)
+	@echo [.]   Creating file "$(DIR_SRC)/$(SOURCES_FILE_MK)"
+	@echo # Declare all source files in the SOURCES variable, with "src" as the relative root. > $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
+	@echo # Write source files names on one line, or on multiple lines by adding a backslash at the end and going on a new line. >> $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
+	@echo SOURCES := >> $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
+else
+	@echo "[.]   Creating file '$(DIR_SRC)/$(SOURCES_FILE_MK)'"
+	@echo "# Declare all source files in the SOURCES variable, with 'src' as the relative root." > $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
+	@echo "# Write source files names on one line, or on multiple lines by adding a backslash at the end and going on a new line." >> $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
+	@echo "SOURCES := " >> $(DIR_SRC)/$(SOURCES_FILE_MK)
+endif
+endif
+	@echo [+] OK
+	@echo ============================================================
+ifeq ($(OS),Windows_NT)
+	@echo [?] Declare all the source files in the "$(DIR_SRC)/$(SOURCES_FILE_MK)" file.
+else
+	@echo "[?] Declare all the source files in the '$(DIR_SRC)/$(SOURCES_FILE_MK)' file."
+endif
+	@echo ============================================================
 
 
 # Check existing project directories
@@ -157,19 +193,26 @@ endif
 	@echo ============================================================
 
 
-# Release build
+# Release pre-build
 .PHONY: release_info release
 release_info:
 	@echo ====================== Build Release =======================
+ifeq ($(SOURCES),)
+ifeq ($(OS),Windows_NT)
+	@echo [!] No source files declared in "$(SOURCES_FILE_MK)"
+else
+	@echo "[!] No source files declared in '$(SOURCES_FILE_MK)'"
+endif
+	@echo.
+endif
 ifeq ($(OS),Windows_NT)
 	@echo [+] Building project in Release mode "$(RELEASE_TARGET)"...
 else
 	@echo "[+] Building project in Release mode '$(RELEASE_TARGET)'..."
 endif
 
+# Release build
 release: check_directories release_info $(RELEASE_TARGET)
-	@echo [+] OK
-	@echo ============================================================
 ifeq ($(OS),Windows_NT)
 	@echo [?] Type ".\$(subst /,\,$(RELEASE_TARGET))" to exectue the program.
 else
@@ -177,7 +220,7 @@ else
 endif
 	@echo ============================================================
 
-# Link for Release target.
+# Link object files for Release target.
 $(RELEASE_TARGET): $(RELEASE_OBJS)
 ifeq ($(OS),Windows_NT)
 	@echo [.]   Linking Release objects
@@ -185,12 +228,14 @@ else
 	@echo "[.]   Linking Release objects"
 endif
 ifeq ($(SRC_FILES.cxx),)
-	@$(LINK.c) $^ $(EXTRA_LDFLAGS) $(RELEASE_FLAGS) -o $@
+	@$(LINK.c) $(RELEASE_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
 else
-	@$(LINK.cxx) $^ $(EXTRA_LDFLAGS) $(RELEASE_FLAGS) -o $@
+	@$(LINK.cxx) $(RELEASE_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
 endif
+	@echo [+] OK
+	@echo ============================================================
 
-# Compile C source files for Release mode.
+# Compile C source files for Release build.
 $(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.c
 ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
@@ -202,9 +247,9 @@ else
 	@$(MKDIR_P) $(dir $@)
 	@echo "[.]   Compiling '$<'"
 endif
-	@$(COMPILE.c) $< $(RELEASE_FLAGS) -o $@
+	@$(COMPILE.c) $(RELEASE_FLAGS) $< -o $@
 
-# Compile C++ source files for Release mode.
+# Compile C++ source files for Release build.
 $(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.cpp
 ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
@@ -216,22 +261,29 @@ else
 	@$(MKDIR_P) $(dir $@)
 	@echo "[.]   Compiling '$<'"
 endif
-	@$(COMPILE.cxx) $< $(RELEASE_FLAGS) -o $@
+	@$(COMPILE.cxx) $(RELEASE_FLAGS) $< -o $@
 
 
-# Debug mode build
+# Debug pre-build
 .PHONY: debug_info debug
 debug_info:
 	@echo ======================= Build Debug ========================
+ifeq ($(SOURCES),)
+ifeq ($(OS),Windows_NT)
+	@echo [!] No source files declared in "$(SOURCES_FILE_MK)".
+else
+	@echo "[!] No source files declared in '$(SOURCES_FILE_MK)'."
+endif
+	@echo.
+endif
 ifeq ($(OS),Windows_NT)
 	@echo [+] Building project in Release mode "$(RELEASE_TARGET)"...
 else
 	@echo "[+] Building project in Debug mode '$(DEBUG_TARGET)'..."
 endif
 
-debug: check_directories debug_info $(DEBUG_TARGET)
-	@echo [+] OK
-	@echo ============================================================
+# Debug build
+debug: check_directories debug_info $(DEBUG_TARGET) cleanobj
 ifeq ($(OS),Windows_NT)
 	@echo [?] Type ".\$(subst /,\,$(DEBUG_TARGET))" to exectue the program.
 else
@@ -239,7 +291,7 @@ else
 endif
 	@echo ============================================================
 
-# Link for Debug mode.
+# Link objects files for Debug target.
 $(DEBUG_TARGET): $(DEBUG_OBJS)
 ifeq ($(OS),Windows_NT)
 	@echo [.]   Linking Debug objects
@@ -247,12 +299,14 @@ else
 	@echo "[.]   Linking Debug objects"
 endif
 ifeq ($(SRC_FILES.cxx),)
-	@$(LINK.c) $^ $(EXTRA_LDFLAGS) $(DEBUG_FLAGS) -o $@
+	@$(LINK.c) $(DEBUG_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
 else
-	@$(LINK.cxx) $^ $(EXTRA_LDFLAGS) $(DEBUG_FLAGS) -o $@
+	@$(LINK.cxx) $(DEBUG_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
 endif
+	@echo [+] OK
+	@echo ============================================================
 
-# Compile C source files for Debug mode.
+# Compile C source files for Debug build.
 $(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.c
 ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
@@ -264,9 +318,9 @@ else
 	@$(MKDIR_P) $(dir $@)
 	@echo "[.]   Compiling '$<'"
 endif
-	@$(COMPILE.c) $< $(DEBUG_FLAGS) -o $@
+	@$(COMPILE.c) $(DEBUG_FLAGS) $< -o $@
 
-# Compile C++ source files for Debug mode.
+# Compile C++ source files for Debug build.
 $(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.cpp
 ifeq ($(OS),Windows_NT)
 	@if not exist "$(dir $@)" (\
@@ -278,10 +332,11 @@ else
 	@$(MKDIR_P) $(dir $@)
 	@echo "[.]   Compiling '$<'"
 endif
-	@$(COMPILE.cxx) $< $(DEBUG_FLAGS) -o $@
+	@$(COMPILE.cxx) $(DEBUG_FLAGS) $< -o $@
 
 
 # Clean project, removing bin and build directories
+.PHONY: clean
 clean:
 	@echo ====================== Clean project =======================
 	@echo [+] Cleaning project...
@@ -304,27 +359,61 @@ endif
 	@echo [+] OK
 	@echo ============================================================
 
+# Clean objects, removing build directories
+.PHONY: cleanobj
+cleanobj:
+	@echo ====================== Clean objects =======================
+	@echo [+] Cleaning objects files...
+ifeq ($(filter $(DIR_BUILD),$(wildcard *)),$(DIR_BUILD))
+ifeq ($(OS),Windows_NT)
+	@echo [.]   Deleting directory "$(DIR_BUILD)"
+else
+	@echo "[.]   Deleting directory '$(DIR_BUILD)'"
+endif
+	@$(RM_RF) $(DIR_BUILD)
+endif
+	@echo [+] OK
+	@echo ============================================================
+
+
+# Run the release executable with no arguments
+.PHONY: run
+run:
+ifneq ($(filter $(RELEASE_TARGET),$(wildcard $(DIR_BIN_RELEASE)/*)),)
+	@$(RELEASE_TARGET)
+else
+ifeq ($(OS),Windows_NT)
+	@echo [!] No executable "$(RELEASE_TARGET)" found.
+	@echo [!] Try to compile using the command "make release".
+else
+	@echo "[!] No executable '$(RELEASE_TARGET)' found."
+	@echo "[!] Try to compile using the command 'make release'."
+endif
+endif
+
 
 # Display source and object files.
+.PHONY: info
 info:
 	@echo ========================= Project ==========================
 ifeq ($(OS),Windows_NT)
 	@echo [?] OS : $(OS)
+	@echo [?] Target : "$(TARGET_NAME)" in "$(DIR_BIN_RELEASE)/" or "$(DIR_BIN_DEBUG)/"
 else
 	@echo [?] OS : $(shell uname)
+	@echo [?] Target : '$(TARGET_NAME)' in '$(DIR_BIN_RELEASE)/' or '$(DIR_BIN_DEBUG)/'
 endif
-	@echo [?] Target : $(TARGET_NAME)
 	@echo ============================================================
 ifeq ($(OS),Windows_NT)
 	@echo [+] C source files (.c) :
 	@echo [.]   $(SRC_FILES.c)
-	@echo [.] --------------------------------------------------------
+	@echo [.]---------------------------------------------------------
 	@echo [+] C++ source files (.cpp) :
 	@echo [.]   $(SRC_FILES.cxx)
-	@echo [.] --------------------------------------------------------
+	@echo [.]---------------------------------------------------------
 	@echo [+] Object files, Release :
 	@echo [.]   $(RELEASE_OBJS)
-	@echo [.] --------------------------------------------------------
+	@echo [.]---------------------------------------------------------
 	@echo [+] Object files, Debug :
 	@echo [.]   $(DEBUG_OBJS)
 else
@@ -350,22 +439,25 @@ endif
 
 
 # Display usage help.
+.PHONY: help
 help:
 ifeq ($(OS),Windows_NT)
 	@echo Usage:
 	@echo     make             Build project, in Release mode by default.
 	@echo     make release     Build project, in Release mode.
 	@echo     make debug       Build project, in Debug mode.
-	@echo     make clean       Clean project directory.
-	@echo     make info        Display info about files in project directory.
-	@echo     make version     Display compiler version.
+	@echo     make clean       Clean project, remove directories '$(DIR_BIN)' and '$(DIR_BUILD)'.
+	@echo     make cleanobj    Clean project, remove directory '$(DIR_BUILD)'.
+	@echo     make info        Display info about files in project.
+	@echo     make version     Display compilers version.
 	@echo     make help        Display this help message.
 else
 	@echo "Usage:"
 	@echo -e "\tmake \t\tBuild project, in Release mode by default."
 	@echo -e "\tmake release \tBuild project, in Release mode."
 	@echo -e "\tmake debug \tBuild project, in Debug mode."
-	@echo -e "\tmake clean \tClean project directory."
+	@echo -e "\tmake clean \tClean project, remove directories '$(DIR_BIN)' and '$(DIR_BUILD)'."
+	@echo -e "\tmake clean \tClean project, remove directory '$(DIR_BUILD)'."
 	@echo -e "\tmake info \tDisplay info about files in project directory."
 	@echo -e "\tmake version \tDisplay compiler version."
 	@echo -e "\tmake help \tDisplay this help message."
@@ -376,4 +468,4 @@ endif
 .PHONY: version
 version:
 	@$(CC) --version
-	@$(CC) -v
+	@$(CXX) --version

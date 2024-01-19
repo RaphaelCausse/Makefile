@@ -36,11 +36,8 @@ To use this makefile template properly, please follow this project directory lay
   ├──── README.md
   ├──── LICENSE.md
   │
-  ├──┬─[ build ]
-  │  └──── *.o
-  │
   ├──┬─[ src ]
-  │  ├──── sources.mk   # Important: declare in that file all the source files 
+  │  ├──── sources.mk   # Important: declare in that file all the source files to compile
   │  │
   │  ├──── main.c / main.cpp
   │  ├──── *.c / *.cpp
@@ -57,7 +54,7 @@ To use this makefile template properly, please follow this project directory lay
 
 ## INSTALLATION
 
-**Clone** this repository:
+**Clone** this repository :
 ```
 git clone https://github.com/RaphaelCausse/Makefile_C_Cpp.git
 ```
@@ -65,11 +62,18 @@ git clone https://github.com/RaphaelCausse/Makefile_C_Cpp.git
 ```
 cd Makefile_C_Cpp
 ```
-**Copy** the Makefile in your project.
+**Copy** the Makefile in your project at root level oof your project directory.
+
+**Initializze** the project layout :
+```
+make init
+```
 
 <br>
 
 ## USAGE
+
+**Update** the `sources.mk` file with the files to compile.
 
 **Build** the project (default is Release mode):
 ```
