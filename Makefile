@@ -400,8 +400,8 @@ ifeq ($(OS),Windows_NT)
 	@echo [?] OS : $(OS)
 	@echo [?] Target : "$(TARGET_NAME)" in "$(DIR_BIN_RELEASE)/" or "$(DIR_BIN_DEBUG)/"
 else
-	@echo [?] OS : $(shell uname)
-	@echo [?] Target : '$(TARGET_NAME)' in '$(DIR_BIN_RELEASE)/' or '$(DIR_BIN_DEBUG)/'
+	@echo "[?] OS : $(shell uname)"
+	@echo "[?] Target : '$(TARGET_NAME)' in '$(DIR_BIN_RELEASE)/' or '$(DIR_BIN_DEBUG)/'"
 endif
 	@echo ============================================================
 ifeq ($(OS),Windows_NT)
@@ -428,12 +428,6 @@ else
 	@echo [.]---------------------------------------------------------
 	@echo [+] Object files, Debug :
 	@echo "[.]   $(DEBUG_OBJS)"
-	@echo [.]---------------------------------------------------------
-	@echo [+] Target, Release :
-	@echo "[.]   $(RELEASE_TARGET)"
-	@echo [.]---------------------------------------------------------
-	@echo [+] Target, Debug :
-	@echo "[.]   $(DEBUG_TARGET)"
 endif
 	@echo ============================================================
 
