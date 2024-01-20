@@ -20,49 +20,64 @@ DIR_BIN 	:= bin
 DIR_BUILD 	:= build
 DIR_SRC 	:= src
 
-# Sources list file .mk
+# Sources list file, where all source files to compile should be declared, without the "src/" path prefix.
 SOURCES_FILE_MK := sources.mk
 
 
-# Include directories to indicate where to search for header files
-INCLUDES 	:= src
+# Include directories, indicate where to search for included header files. It should contain the space-separated list of directories where header files can be found.
+INCLUDES		:= src
 # OS specific includes. Might defer depending your system configuration.
-INCLUDES_LINUX	 := 
-INCLUDES_WINDOWS := 
+INCLUDES_LINUX		:=
+INCLUDES_WINDOWS	:=
 ifeq ($(OS),Windows_NT)
 INCLUDES += $(INCLUDES_WINDOWS)
 else
 INCLUDES += $(INCLUDES_LINUX)
 endif
 
-# Link libraries (e.g. libm -> m)
-LIBS			:= m
+# Libraries to link, given by their name without the "lib". It should contain the space-separated list of libraries that are used by your programs.
+LIBS		:= m
 # OS specific libraries
-LIBS_LINUX  	:= 
-LIBS_WINDOWS	:= 
+LIBS_LINUX  	:=
+LIBS_WINDOWS	:= ws2_32
 ifeq ($(OS),Windows_NT)
 LIBS += $(LIBS_WINDOWS)
 else
 LIBS += $(LIBS_LINUX)
 endif
 
+# Libraries directories, specify the linker where to search for the libraries. It should contain the space-separated list of directories where libraries can be found.
+LIBS_DIRS	:= 
+# OS specific libraries directories
+LIBS_DIRS_LINUX 	:=
+LIBS_DIRS_WINDOWS 	:=
+ifeq ($(OS),Windows_NT)
+LIBS_DIRS += $(LIBS_DIRS_WINDOWS)
+else
+LIBS_DIRS += $(LIBS_DIRS_LINUX)
+endif
+
 
 ################ COMPILER ################
 
-# Compiler and linker.
+# Compiler and linker for both C and C++.
 CC      := gcc --std=c99
 CXX     := g++
 
 # /!\ Comment this line if you are using only C or only C++. Un-comment this line if you are using both C and C++.
 # CC 		= $(CXX)
 
-# C Preprocessor options, to include directories
+# Compiler options, applies to both C and C++ compiling as well as LD.
+CFLAGS			= -Wall -Wextra -Wpedantic
+# Extra Compiler options, applies to both C and C++ compiling as well as LD.
+EXTRA_CFLAGS    =
+
+# C Preprocessor options, to include directories.
 CPPFLAGS        = $(addprefix -I,$(INCLUDES))
 
-# Extra Compiler options, applies to both C and C++ compiling as well as LD.
-EXTRA_CFLAGS    = -Wall -Wextra -Wpedantic
-
-# Extra Linker options for libraries linkage
+# Linker options, to indicate where to search for linked libraries.
+LDFLAGS 		= $(addprefix -L,$(LIBS_DIRS))
+# Extra Linker options, to link libraries.
 EXTRA_LDFLAGS   = $(addprefix -l,$(LIBS))
 
 
@@ -78,6 +93,7 @@ LINK.cxx        = $(CXX) $(CXXFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 SRC_FILES.c   := $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
 SRC_FILES.cxx := $(filter %.cpp,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
 OBJ_FILES     := $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
+
 
 # Release build set up. 
 DIR_BIN_RELEASE 	:= $(DIR_BIN)/release
@@ -206,9 +222,9 @@ endif
 	@echo.
 endif
 ifeq ($(OS),Windows_NT)
-	@echo [+] Building project in Release mode "$(RELEASE_TARGET)"...
+	@echo [+] Building project in Release mode...
 else
-	@echo "[+] Building project in Release mode '$(RELEASE_TARGET)'..."
+	@echo "[+] Building project in Release mode..."
 endif
 
 # Release build
@@ -223,9 +239,9 @@ endif
 # Link object files for Release target.
 $(RELEASE_TARGET): $(RELEASE_OBJS)
 ifeq ($(OS),Windows_NT)
-	@echo [.]   Linking Release objects
+	@echo [.]   Linking Release objects into "$(RELEASE_TARGET)"
 else
-	@echo "[.]   Linking Release objects"
+	@echo "[.]   Linking Release objects into '$(RELEASE_TARGET)'"
 endif
 ifeq ($(SRC_FILES.cxx),)
 	@$(LINK.c) $(RELEASE_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
@@ -277,9 +293,9 @@ endif
 	@echo.
 endif
 ifeq ($(OS),Windows_NT)
-	@echo [+] Building project in Release mode "$(RELEASE_TARGET)"...
+	@echo [+] Building project in Release mode...
 else
-	@echo "[+] Building project in Debug mode '$(DEBUG_TARGET)'..."
+	@echo "[+] Building project in Debug mode..."
 endif
 
 # Debug build
@@ -294,9 +310,9 @@ endif
 # Link objects files for Debug target.
 $(DEBUG_TARGET): $(DEBUG_OBJS)
 ifeq ($(OS),Windows_NT)
-	@echo [.]   Linking Debug objects
+	@echo [.]   Linking Debug objects into "$(DEBUG_TARGET)"
 else
-	@echo "[.]   Linking Debug objects"
+	@echo "[.]   Linking Debug objects into '$(DEBUG_TARGET)'"
 endif
 ifeq ($(SRC_FILES.cxx),)
 	@$(LINK.c) $(DEBUG_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
