@@ -375,6 +375,7 @@ endif
 	@echo [+] OK
 	@echo ============================================================
 
+
 # Clean objects, removing build directories
 .PHONY: cleanobj
 cleanobj:
@@ -451,6 +452,7 @@ endif
 # Display usage help.
 .PHONY: help
 help:
+	@echo =========================== Help ===========================
 ifeq ($(OS),Windows_NT)
 	@echo Usage:
 	@echo     make             Build project, in Release mode by default.
@@ -472,6 +474,7 @@ else
 	@echo -e "\tmake version \tDisplay compiler version."
 	@echo -e "\tmake help \tDisplay this help message."
 endif
+	@echo ============================================================
 
 
 ## Version info
