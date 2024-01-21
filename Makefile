@@ -1,5 +1,5 @@
 ###########################################
-# Makefile srcPathlate for C/C++ projects.
+# Makefile template for C/C++ projects.
 # Please follow recommended project layout in README.
 # Author : Raphael CAUSSE
 # Date : 08/2022
