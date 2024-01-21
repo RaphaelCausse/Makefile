@@ -22,7 +22,7 @@ DIR_SRC 	:= src
 
 # Sources list file, where all source files to compile should be declared, without the "src/" path prefix.
 SOURCES_FILE_MK := sources.mk
-
+SRC_FILE_MK_START_CMT := \# C/C++ source files
 
 # Include directories, indicate where to search for included header files. It should contain the space-separated list of directories where header files can be found.
 INCLUDES		:= src
@@ -115,9 +115,11 @@ DEBUG_OBJS     		:= $(addprefix $(DIR_BUILD_DEBUG)/,$(OBJ_FILES))
 ifeq ($(OS),Windows_NT)
 MKDIR_P := mkdir
 RM_RF   := rmdir /S/Q
+CAT 	:= type
 else
 MKDIR_P := mkdir -p
 RM_RF   := rm -rf
+CAT 	:= cat
 endif
 
 
@@ -408,6 +410,73 @@ endif
 endif
 
 
+
+# Run the debug executable with no arguments
+.PHONY: run-debug
+run-debug:
+ifneq ($(filter $(DEBUG_TARGET),$(wildcard $(DIR_BIN_DEBUG)/*)),)
+	@$(DEBUG_TARGET)
+else
+ifeq ($(OS),Windows_NT)
+	@echo [!] No executable "$(DEBUG_TARGET)" found.
+	@echo [!] Try to compile using the command "make debug".
+else
+	@echo "[!] No executable '$(DEBUG_TARGET)' found."
+	@echo "[!] Try to compile using the command 'make debug'."
+endif
+endif
+
+# Update the sources.mk with .c & .cpp which are in src folder
+cpt := 0
+.PHONY: upt-src
+upt-src:
+ifneq ($(filter $(DIR_SRC)/$(SOURCES_FILE_MK),$(wildcard $(DIR_SRC)/*)),)
+ifeq ($(OS),Windows_NT)
+ifeq ($(findstring powershell.exe,$(SHELL)),powershell.exe)
+# make command comes from a PowerShell
+	@echo [.]   (Pas fini) Updating "$(SOURCES_FILE_MK)" using PowerShell...
+	@Get-ChildItem -Path "$(DIR_SRC)" -Recurse -Filter *.c,*.cpp | ForEach-Object { echo SOURCES += $$_.FullName.Replace('$(DIR_SRC)\', '.') }
+else
+# make command comes from a CMD	
+	@echo [.] Updating "$(SOURCES_FILE_MK)" using CMD...
+	@echo. > tmp.txt
+	@echo $(SRC_FILE_MK_START_CMT)> "$(DIR_SRC)/$(SOURCES_FILE_MK)"
+	@for /r "$(DIR_SRC)" %%i in (*.c,*.cpp) do ( \
+		set /a cpt+=1 && \
+		@setlocal enabledelayedexpansion && \
+		set "srcPath=%%i" && \
+		set "srcPath=!srcPath:\=/!" && \
+		set "srcPath=!srcPath:$(CURDIR)/$(DIR_SRC)/=!" && \
+		set "srcPath=!srcPath!" && \
+		(if !cpt! equ 1 ( \
+			set "srcLine=SOURCES := !srcPath! \" \
+		) else ( \
+			set "srcLine=!srcPath! \" \
+		)) && \
+		echo !srcLine!>>"$(DIR_SRC)/$(SOURCES_FILE_MK)"&&\
+		endlocal \
+	)
+	@del tmp.txt
+	@echo [.] $(SOURCES_FILE_MK) Update complete.
+	@echo ====================== $(SOURCES_FILE_MK) ==========================
+	@$(CAT) "$(DIR_SRC)\$(SOURCES_FILE_MK)"
+	@echo ============================================================
+endif
+else
+	@echo [.]  (Pas fini) Updating "$(SOURCES_FILE_MK)"...
+	@find $(DIR_SRC) -type f \( -name '*.c' -or -name '*.cpp' \) -exec echo SOURCES += {} \; | sed 's|$(DIR_SRC)/|./|g' 
+endif
+else
+ifeq ($(OS),Windows_NT)
+	@echo [!] No src folder nor sources.mk "$(SOURCES_FILE_MK)" found.
+	@echo [!] Try to initialize the project using the command "make init".
+else
+	@echo "[!] No src folder nor sources.mk '$(SOURCES_FILE_MK)' found."
+	@echo "[!] Try to initialize the project using the command 'make init'."
+endif
+endif
+
+
 # Display source and object files.
 .PHONY: info
 info:
@@ -451,6 +520,7 @@ endif
 # Display usage help.
 .PHONY: help
 help:
+	@echo ========================== Help ============================
 ifeq ($(OS),Windows_NT)
 	@echo Usage:
 	@echo     make             Build project, in Release mode by default.
@@ -472,6 +542,7 @@ else
 	@echo -e "\tmake version \tDisplay compiler version."
 	@echo -e "\tmake help \tDisplay this help message."
 endif
+	@echo ============================================================
 
 
 ## Version info
