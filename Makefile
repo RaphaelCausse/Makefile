@@ -439,7 +439,6 @@ ifeq ($(findstring powershell.exe,$(SHELL)),powershell.exe)
 else
 # make command comes from a CMD	
 	@echo [.] Updating "$(SOURCES_FILE_MK)" using CMD...
-	@echo. > tmp.txt
 	@echo $(SRC_FILE_MK_START_CMT)> "$(DIR_SRC)/$(SOURCES_FILE_MK)"
 	@for /r "$(DIR_SRC)" %%i in (*.c,*.cpp) do ( \
 		set /a cpt+=1 && \
@@ -456,15 +455,30 @@ else
 		echo !srcLine!>>"$(DIR_SRC)/$(SOURCES_FILE_MK)"&&\
 		endlocal \
 	)
-	@del tmp.txt
 	@echo [.] $(SOURCES_FILE_MK) Update complete.
 	@echo ====================== $(SOURCES_FILE_MK) ==========================
 	@$(CAT) "$(DIR_SRC)\$(SOURCES_FILE_MK)"
 	@echo ============================================================
 endif
 else
-	@echo [.]  (Pas fini) Updating "$(SOURCES_FILE_MK)"...
-	@find $(DIR_SRC) -type f \( -name '*.c' -or -name '*.cpp' \) -exec echo SOURCES += {} \; | sed 's|$(DIR_SRC)/|./|g' 
+	@echo "[.] Updating \"$(SOURCES_FILE_MK)\" using Bash..."
+	@echo "$(SRC_FILE_MK_START_CMT)" > "$(DIR_SRC)/$(SOURCES_FILE_MK)"
+	@files=$$(find "$(DIR_SRC)" -type f \( -name "*.c" -o -name "*.cpp" \)); \
+	for file in $$files; do \
+		tmpPath="$$(realpath --relative-to="$(CURDIR)/$(DIR_SRC)" "$$file")" && \
+		cpt=$$((cpt+1)); \
+		if [ "$$cpt" -eq 1 ]; then \
+			srcLine="SOURCES := $$tmpPath \\"; \
+		else \
+			srcLine="$$tmpPath \\"; \
+		fi && \
+		echo "$$srcLine" >> "$(DIR_SRC)/$(SOURCES_FILE_MK)"; \
+	done
+	@echo "[.] $(SOURCES_FILE_MK) Update complete."
+	@echo "====================== $(SOURCES_FILE_MK) =========================="
+	@cat "$(DIR_SRC)/$(SOURCES_FILE_MK)"
+	@echo "=============================================================="
+
 endif
 else
 ifeq ($(OS),Windows_NT)
@@ -475,6 +489,11 @@ else
 	@echo "[!] Try to initialize the project using the command 'make init'."
 endif
 endif
+
+
+# Super does, in order : make clean, make updt-src, make release
+.PHONY: super
+super: clean upt-src release
 
 
 # Display source and object files.
