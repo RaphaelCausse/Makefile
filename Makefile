@@ -394,7 +394,7 @@ endif
 	@echo ============================================================
 
 
-# Run the release executable with no arguments
+# Run the release executable with or without arguments
 .PHONY: run $(MAKECMDGOALS)
 run:
 ifneq ($(filter $(RELEASE_TARGET),$(wildcard $(DIR_BIN_RELEASE)/*)),)
@@ -410,7 +410,7 @@ endif
 endif
 
 
-# Run the debug executable with no arguments
+# Run the debug executable with or without arguments
 .PHONY: run-debug $(MAKECMDGOALS)
 run-debug:
 ifneq ($(filter $(DEBUG_TARGET),$(wildcard $(DIR_BIN_DEBUG)/*)),)
@@ -495,7 +495,7 @@ else
     PAUSE_CMD = sleep $(PAUSE_DURATION)
 endif
 
-# Super does, in order: make clean, make upt-src, make release, make run
+# Super does, in order: make clean, make upt-src, make release, make run 
 .PHONY: super $(MAKECMDGOALS)
 super:
 	@$(MAKE) clean
@@ -553,14 +553,18 @@ help:
 	@echo ========================== Help ============================
 ifeq ($(OS),Windows_NT)
 	@echo Usage:
-	@echo     make             Build project, in Release mode by default.
-	@echo     make release     Build project, in Release mode.
-	@echo     make debug       Build project, in Debug mode.
-	@echo     make clean       Clean project, remove directories '$(DIR_BIN)' and '$(DIR_BUILD)'.
-	@echo     make cleanobj    Clean project, remove directory '$(DIR_BUILD)'.
-	@echo     make info        Display info about files in project.
-	@echo     make version     Display compilers version.
-	@echo     make help        Display this help message.
+	@echo     make             	Build project, in Release mode by default.
+	@echo     make release     	Build project, in Release mode.
+	@echo     make debug       	Build project, in Debug mode.
+	@echo     make clean       	Clean project, remove directories '$(DIR_BIN)' and '$(DIR_BUILD)'.
+	@echo     make cleanobj    	Clean project, remove directory '$(DIR_BUILD)'.
+	@echo     make run    		Run the release with specified parameters if specified.
+	@echo     make run-debug    Run the release with specified parameters if specified.
+	@echo	  make upt-src 		Rewrite the '$(SOURCES_FILE_MK)' with the content of '$(DIR_SRC)'
+	@echo	  make super 		Does the following in order: clean, upt-src, release, run
+	@echo     make info         Display info about files in project.
+	@echo     make version      Display compilers version.
+	@echo     make help         Display this help message.
 else
 	@echo "Usage:"
 	@echo -e "\tmake \t\tBuild project, in Release mode by default."
@@ -568,7 +572,9 @@ else
 	@echo -e "\tmake debug \tBuild project, in Debug mode."
 	@echo -e "\tmake clean \tClean project, remove directories '$(DIR_BIN)' and '$(DIR_BUILD)'."
 	@echo -e "\tmake clean \tClean project, remove directory '$(DIR_BUILD)'."
-	@echo -e "\tmake info \tDisplay info about files in project directory."
+	@echo -e "\tmake upt-src \tRewrite the '$(SOURCES_FILE_MK)' with the content of '$(DIR_SRC)'."
+	@echo -e "\tmake super \tDoes the following in order: clean, upt-src, release, run."
+	@echo -e "\tmake info \tDisplay info about files in the project directory."
 	@echo -e "\tmake version \tDisplay compiler version."
 	@echo -e "\tmake help \tDisplay this help message."
 endif
