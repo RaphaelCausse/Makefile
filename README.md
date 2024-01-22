@@ -89,9 +89,13 @@ make release
 ```
 make debug
 ```
-**Run** the program in Release mode, without arguments :
+**Run** the program in Release mode, with parameters if specified :
 ```
 make run
+```
+**Run** the program in Debug mode, with parameters if specified :
+```
+make run-debug
 ```
 <br>
 
@@ -104,6 +108,14 @@ make clean
 **Clean** the project directory, by removing `build` directory, containing all object files :
 ```
 make cleanobj
+```
+**Update** the sources.mk using the .c and .cpp files in src directory (recursively) :
+```
+make upt-src
+```
+**Super** does the following in order: clean, upt-src, release, run:
+```
+make super
 ```
 **Display** info about files in project directory:
 ```
@@ -118,3 +130,7 @@ make help
 ## AUTHOR
 
 Raphael CAUSSE, 08/2022.
+
+## CONTRIBUTORS
+
+Joan LEGRAND, 01/2024
