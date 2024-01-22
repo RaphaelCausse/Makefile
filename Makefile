@@ -498,7 +498,7 @@ ifeq ($(findstring powershell.exe,$(SHELL)),powershell.exe)
     PAUSE_CMD = Start-Sleep -Milliseconds $(PAUSE_DURATION * 1000)
 else
 # CMD
-    PAUSE_CMD = timeout /nobreak /t 1 /nobreak /t $(PAUSE_DURATION)
+    PAUSE_CMD = timeout /nobreak /t $(PAUSE_DURATION)
 endif
 else
 # Bash
