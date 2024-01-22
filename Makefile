@@ -395,10 +395,10 @@ endif
 
 
 # Run the release executable with no arguments
-.PHONY: run
+.PHONY: run $(MAKECMDGOALS)
 run:
 ifneq ($(filter $(RELEASE_TARGET),$(wildcard $(DIR_BIN_RELEASE)/*)),)
-	@$(RELEASE_TARGET)
+	@$(RELEASE_TARGET) $(filter-out $@,$(MAKECMDGOALS))
 else
 ifeq ($(OS),Windows_NT)
 	@echo [!] No executable "$(RELEASE_TARGET)" found.
@@ -410,12 +410,11 @@ endif
 endif
 
 
-
 # Run the debug executable with no arguments
-.PHONY: run-debug
+.PHONY: run-debug $(MAKECMDGOALS)
 run-debug:
 ifneq ($(filter $(DEBUG_TARGET),$(wildcard $(DIR_BIN_DEBUG)/*)),)
-	@$(DEBUG_TARGET)
+	@$(DEBUG_TARGET) $(filter-out $@,$(MAKECMDGOALS))
 else
 ifeq ($(OS),Windows_NT)
 	@echo [!] No executable "$(DEBUG_TARGET)" found.
@@ -426,19 +425,20 @@ else
 endif
 endif
 
+
 # Update the sources.mk with .c & .cpp which are in src folder
 cpt := 0
+ifeq ($(OS),Windows_NT)
+	SRC_SRC_MK := "$(DIR_SRC)\$(SOURCES_FILE_MK)"
+else 
+	SRC_SRC_MK := "$(DIR_SRC)/$(SOURCES_FILE_MK)"
+endif
 .PHONY: upt-src
 upt-src:
 ifneq ($(filter $(DIR_SRC)/$(SOURCES_FILE_MK),$(wildcard $(DIR_SRC)/*)),)
 ifeq ($(OS),Windows_NT)
-ifeq ($(findstring powershell.exe,$(SHELL)),powershell.exe)
-# make command comes from a PowerShell
-	@echo [.]   (Pas fini) Updating "$(SOURCES_FILE_MK)" using PowerShell...
-	@Get-ChildItem -Path "$(DIR_SRC)" -Recurse -Filter *.c,*.cpp | ForEach-Object { echo SOURCES += $$_.FullName.Replace('$(DIR_SRC)\', '.') }
-else
-# make command comes from a CMD	
-	@echo [.] Updating "$(SOURCES_FILE_MK)" using CMD...
+# Windows
+	@echo [.] Updating "$(SOURCES_FILE_MK)" (Windows)...
 	@echo $(SRC_FILE_MK_START_CMT)> "$(DIR_SRC)/$(SOURCES_FILE_MK)"
 	@for /r "$(DIR_SRC)" %%i in (*.c,*.cpp) do ( \
 		set /a cpt+=1 && \
@@ -455,13 +455,9 @@ else
 		echo !srcLine!>>"$(DIR_SRC)/$(SOURCES_FILE_MK)"&&\
 		endlocal \
 	)
-	@echo [.] $(SOURCES_FILE_MK) Update complete.
-	@echo ====================== $(SOURCES_FILE_MK) ==========================
-	@$(CAT) "$(DIR_SRC)\$(SOURCES_FILE_MK)"
-	@echo ============================================================
-endif
 else
-	@echo "[.] Updating \"$(SOURCES_FILE_MK)\" using Bash..."
+#Linux
+	@echo "[.] Updating \"$(SOURCES_FILE_MK)\" (Linux)..."
 	@echo "$(SRC_FILE_MK_START_CMT)" > "$(DIR_SRC)/$(SOURCES_FILE_MK)"
 	@files=$$(find "$(DIR_SRC)" -type f \( -name "*.c" -o -name "*.cpp" \)); \
 	for file in $$files; do \
@@ -474,12 +470,11 @@ else
 		fi && \
 		echo "$$srcLine" >> "$(DIR_SRC)/$(SOURCES_FILE_MK)"; \
 	done
-	@echo "[.] $(SOURCES_FILE_MK) Update complete."
-	@echo "====================== $(SOURCES_FILE_MK) =========================="
-	@cat "$(DIR_SRC)/$(SOURCES_FILE_MK)"
-	@echo "=============================================================="
-
 endif
+	@echo [.] $(SOURCES_FILE_MK) Update complete.
+	@echo ====================== $(SOURCES_FILE_MK) ==========================
+	@$(CAT) $(SRC_SRC_MK)
+	@echo ============================================================
 else
 ifeq ($(OS),Windows_NT)
 	@echo [!] No src folder nor sources.mk "$(SOURCES_FILE_MK)" found.
@@ -493,20 +488,15 @@ endif
 
 PAUSE_DURATION = 1
 ifeq ($(OS),Windows_NT)
-ifeq ($(findstring powershell.exe,$(SHELL)),powershell.exe)
-# Powershell
-    PAUSE_CMD = Start-Sleep -Milliseconds $(PAUSE_DURATION * 1000)
-else
-# CMD
+# Windows
     PAUSE_CMD = timeout /nobreak /t $(PAUSE_DURATION)
-endif
 else
-# Bash
+# Linux
     PAUSE_CMD = sleep $(PAUSE_DURATION)
 endif
 
 # Super does, in order: make clean, make upt-src, make release, make run
-.PHONY: super
+.PHONY: super $(MAKECMDGOALS)
 super:
 	@$(MAKE) clean
 	@$(PAUSE_CMD)
@@ -514,7 +504,7 @@ super:
 	@$(PAUSE_CMD)
 	@$(MAKE) release
 	@$(PAUSE_CMD)
-	@$(MAKE) run
+	@$(MAKE) run $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Display source and object files.
