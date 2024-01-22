@@ -491,9 +491,30 @@ endif
 endif
 
 
-# Super does, in order : make clean, make updt-src, make release
+PAUSE_DURATION = 1
+ifeq ($(OS),Windows_NT)
+ifeq ($(findstring powershell.exe,$(SHELL)),powershell.exe)
+# Powershell
+    PAUSE_CMD = Start-Sleep -Milliseconds $(PAUSE_DURATION * 1000)
+else
+# CMD
+    PAUSE_CMD = timeout /nobreak /t 1 /nobreak /t $(PAUSE_DURATION)
+endif
+else
+# Bash
+    PAUSE_CMD = sleep $(PAUSE_DURATION)
+endif
+
+# Super does, in order: make clean, make upt-src, make release, make run
 .PHONY: super
-super: clean upt-src release
+super:
+	@$(MAKE) clean
+	@$(PAUSE_CMD)
+	@$(MAKE) upt-src
+	@$(PAUSE_CMD)
+	@$(MAKE) release
+	@$(PAUSE_CMD)
+	@$(MAKE) run
 
 
 # Display source and object files.
