@@ -149,8 +149,8 @@ ifeq ($(OS),Windows_NT)
 	@echo SOURCES := >> $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
 else
 	@echo "[.]   Creating file '$(DIR_SRC)/$(SOURCES_FILE_MK)'"
-	@echo "# Declare all source files in the SOURCES variable, with 'src' as the relative root." > $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
-	@echo "# Write source files names on one line, or on multiple lines by adding a backslash at the end and going on a new line." >> $(subst /,\,$(DIR_SRC)/$(SOURCES_FILE_MK))
+	@echo "# Declare all source files in the SOURCES variable, with 'src' as the relative root." > $(DIR_SRC)/$(SOURCES_FILE_MK)
+	@echo "# Write source files names on one line, or on multiple lines by adding a backslash at the end and going on a new line." >> $(DIR_SRC)/$(SOURCES_FILE_MK)
 	@echo "SOURCES := " >> $(DIR_SRC)/$(SOURCES_FILE_MK)
 endif
 endif
