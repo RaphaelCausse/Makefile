@@ -154,20 +154,22 @@ else
 	@echo "SOURCES := " >> $(DIR_SRC)/$(SOURCES_FILE_MK)
 endif
 endif
-	@echo [+] OK
-	@echo ============================================================
+	@echo [=]=========================================================
+	@echo [+] DONE !
+	@echo [=]=========================================================
 ifeq ($(OS),Windows_NT)
 	@echo [?] Declare all the source files in the "$(DIR_SRC)/$(SOURCES_FILE_MK)" file.
 else
 	@echo "[?] Declare all the source files in the '$(DIR_SRC)/$(SOURCES_FILE_MK)' file."
 endif
 	@echo ============================================================
+	@echo.
 
 
 # Check existing project directories
 .PHONY: check_directories
 check_directories:
-	@echo ======================= Directories ========================
+	@echo ======================= DIRECTORIES ========================
 	@echo [+] Checking project directories...
 ifeq ($(filter $(DIR_BUILD_RELEASE),$(wildcard $(DIR_BUILD)/*)),)
 ifeq ($(OS),Windows_NT)
@@ -205,14 +207,16 @@ else
 	@$(MKDIR_P) $(DIR_BIN_DEBUG)
 endif
 endif
-	@echo [+] OK
+	@echo [=]=========================================================
+	@echo [+] DONE !
 	@echo ============================================================
+	@echo.
 
 
 # Release pre-build
 .PHONY: release_info release
 release_info:
-	@echo ====================== Build Release =======================
+	@echo ====================== BUILD RELEASE =======================
 ifeq ($(SOURCES),)
 ifeq ($(OS),Windows_NT)
 	@echo [!] No source files declared in "$(SOURCES_FILE_MK)"
@@ -235,6 +239,7 @@ else
 	@echo "[?] Type './$(RELEASE_TARGET)' to exectue the program."
 endif
 	@echo ============================================================
+	@echo.
 
 # Link object files for Release target.
 $(RELEASE_TARGET): $(RELEASE_OBJS)
@@ -248,8 +253,9 @@ ifeq ($(SRC_FILES.cxx),)
 else
 	@$(LINK.cxx) $(RELEASE_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
 endif
-	@echo [+] OK
-	@echo ============================================================
+	@echo [=]=========================================================
+	@echo [+] BUILD SUCCESS !
+	@echo [=]=========================================================
 
 # Compile C source files for Release build.
 $(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.c
@@ -283,7 +289,7 @@ endif
 # Debug pre-build
 .PHONY: debug_info debug
 debug_info:
-	@echo ======================= Build Debug ========================
+	@echo ======================= BUILD DEBUG ========================
 ifeq ($(SOURCES),)
 ifeq ($(OS),Windows_NT)
 	@echo [!] No source files declared in "$(SOURCES_FILE_MK)".
@@ -306,6 +312,7 @@ else
 	@echo "[?] Type './$(DEBUG_TARGET)' to exectue the program."
 endif
 	@echo ============================================================
+	@echo.
 
 # Link objects files for Debug target.
 $(DEBUG_TARGET): $(DEBUG_OBJS)
@@ -319,8 +326,9 @@ ifeq ($(SRC_FILES.cxx),)
 else
 	@$(LINK.cxx) $(DEBUG_FLAGS) $^ $(EXTRA_LDFLAGS) -o $@
 endif
-	@echo [+] OK
-	@echo ============================================================
+	@echo [=]=========================================================
+	@echo [+] BUILD SUCCESS !
+	@echo [=]=========================================================
 
 # Compile C source files for Debug build.
 $(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.c
@@ -354,7 +362,7 @@ endif
 # Clean project, removing bin and build directories
 .PHONY: clean
 clean:
-	@echo ====================== Clean project =======================
+	@echo ====================== CLEAN PROJECT =======================
 	@echo [+] Cleaning project...
 ifeq ($(filter $(DIR_BUILD),$(wildcard *)),$(DIR_BUILD))
 ifeq ($(OS),Windows_NT)
@@ -372,14 +380,16 @@ else
 endif
 	@$(RM_RF) $(DIR_BIN)
 endif
-	@echo [+] OK
+	@echo [=]=========================================================
+	@echo [+] CLEAN SUCCESS !
 	@echo ============================================================
+	@echo.
 
 
 # Clean objects, removing build directories
 .PHONY: cleanobj
 cleanobj:
-	@echo ====================== Clean objects =======================
+	@echo ====================== CLEAN OBJECTS =======================
 	@echo [+] Cleaning objects files...
 ifeq ($(filter $(DIR_BUILD),$(wildcard *)),$(DIR_BUILD))
 ifeq ($(OS),Windows_NT)
@@ -389,8 +399,10 @@ else
 endif
 	@$(RM_RF) $(DIR_BUILD)
 endif
-	@echo [+] OK
+	@echo [=]=========================================================
+	@echo [+] CLEAN SUCCESS !
 	@echo ============================================================
+	@echo.
 
 
 # Run the release executable with no arguments
@@ -412,7 +424,7 @@ endif
 # Display source and object files.
 .PHONY: info
 info:
-	@echo ========================= Project ==========================
+	@echo ======================= PROJECT INFO =======================
 ifeq ($(OS),Windows_NT)
 	@echo [?] OS : $(OS)
 	@echo [?] Target : "$(TARGET_NAME)" in "$(DIR_BIN_RELEASE)/" or "$(DIR_BIN_DEBUG)/"
@@ -420,39 +432,40 @@ else
 	@echo "[?] OS : $(shell uname)"
 	@echo "[?] Target : '$(TARGET_NAME)' in '$(DIR_BIN_RELEASE)/' or '$(DIR_BIN_DEBUG)/'"
 endif
-	@echo ============================================================
+	@echo [=]=========================================================
 ifeq ($(OS),Windows_NT)
 	@echo [+] C source files (.c) :
 	@echo [.]   $(SRC_FILES.c)
-	@echo [.]---------------------------------------------------------
+	@echo [-]---------------------------------------------------------
 	@echo [+] C++ source files (.cpp) :
 	@echo [.]   $(SRC_FILES.cxx)
-	@echo [.]---------------------------------------------------------
+	@echo [-]---------------------------------------------------------
 	@echo [+] Object files, Release :
 	@echo [.]   $(RELEASE_OBJS)
-	@echo [.]---------------------------------------------------------
+	@echo [-]---------------------------------------------------------
 	@echo [+] Object files, Debug :
 	@echo [.]   $(DEBUG_OBJS)
 else
 	@echo "[+] C source files (.c) :"
 	@echo "[.]   $(SRC_FILES.c)"
-	@echo [.]---------------------------------------------------------
+	@echo [-]---------------------------------------------------------
 	@echo "[+] C++ source files (.cpp) :"
 	@echo "[.]   $(SRC_FILES.cxx)"
-	@echo [.]---------------------------------------------------------
+	@echo [-]---------------------------------------------------------
 	@echo [+] Object files, Release :
 	@echo "[.]   $(RELEASE_OBJS)"
-	@echo [.]---------------------------------------------------------
+	@echo [-]---------------------------------------------------------
 	@echo [+] Object files, Debug :
 	@echo "[.]   $(DEBUG_OBJS)"
 endif
 	@echo ============================================================
+	@echo.
 
 
 # Display usage help.
 .PHONY: help
 help:
-	@echo =========================== Help ===========================
+	@echo =========================== HELP ===========================
 ifeq ($(OS),Windows_NT)
 	@echo Usage:
 	@echo     make             Build project, in Release mode by default.
@@ -475,10 +488,13 @@ else
 	@echo -e "\tmake help \tDisplay this help message."
 endif
 	@echo ============================================================
-
+	@echo.
 
 ## Version info
 .PHONY: version
 version:
+	@echo ========================== VERSION =========================
 	@$(CC) --version
 	@$(CXX) --version
+	@echo ============================================================
+	@echo.
