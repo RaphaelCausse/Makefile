@@ -8,9 +8,9 @@ Makefile template for small to medium sized C/C++ projects, for Linux and Window
 
 You can build the project in two modes : Release or Debug.
 
-By default, the build is in Release mode.
+By default, the build is in Debug mode.
 
-Declare all the source files you want to compile in the `sources.mk` file in the `src` folder.
+Declare all the source files you want to compile in the `src/sources.mk`.
 
 Please follow recommended project layout.
 
@@ -65,10 +65,10 @@ cd Makefile_C_Cpp
 **Copy** the Makefile in your project at root level of your project directory.
 ```
 cp Makefile <path_to_your_project>
+cd <path_to_your_project>
 ```
 **Initialize** the project layout, in your project directory :
 ```
-cd <path_to_your_project>
 make init
 ```
 
@@ -76,22 +76,22 @@ make init
 
 ## USAGE
 
-**Update** the `sources.mk` file with the files to compile.
+**Update** the `src/sources.mk` file with the files to compile.
 
 **Update** the Makefile for compiler and linker options, check the variables in the `#### PATHS ####` and `#### COMPILER ####` sections.
 
-**Build** the project (default is Release mode) :
+**Build** the project in Release mode :
 ```
-make
 make release
 ```
 **Build** the project in Debug mode :
 ```
 make debug
 ```
-**Run** the program in Release mode, without arguments :
+**Run** the program in Release mode (with optional arguments) :
 ```
 make run
+make run ARGS="your_arguments"
 ```
 <br>
 
@@ -101,11 +101,11 @@ make run
 ```
 make clean
 ```
-**Clean** the project directory, by removing `build` directory, containing all object files :
+**Clean** the object files, by removing `build` directory :
 ```
 make cleanobj
 ```
-**Display** info about files in project directory:
+**Display** info about the project :
 ```
 make info
 ```
@@ -117,4 +117,4 @@ make help
 
 ## AUTHOR
 
-Raphael CAUSSE, 08/2022.
+Raphael CAUSSE.
