@@ -19,7 +19,6 @@ endif
 DIR_BIN        := bin
 DIR_BUILD      := build
 DIR_SRC        := src
-DIR_INCLUDE    := include
 
 
 # Sources list file, where all source files to compile should be declared, without the "src/" path prefix.
@@ -27,14 +26,15 @@ SOURCES_FILE_MK     := $(DIR_SRC)/sources.mk
 
 
 # Include directories, indicate where to search for included header files. It should contain the space-separated list of directories where header files can be found.
-INCLUDES            := src
+INCLUDE_DIRS            := src
 # OS specific includes. Might defer depending your system configuration.
-INCLUDES_LINUX      :=
-INCLUDES_WINDOWS    :=
+INCLUDE_DIRS_LINUX      :=
+INCLUDE_DIRS_WINDOWS    :=
+
 ifeq ($(OS),Windows_NT)
-INCLUDES += $(INCLUDES_WINDOWS)
+INCLUDE_DIRS += $(INCLUDE_DIRS_WINDOWS)
 else
-INCLUDES += $(INCLUDES_LINUX)
+INCLUDE_DIRS += $(INCLUDE_DIRS_LINUX)
 endif
 
 
@@ -43,17 +43,20 @@ LIBS_DIRS           :=
 # OS specific libraries directories
 LIBS_DIRS_LINUX     :=
 LIBS_DIRS_WINDOWS   :=
+
 ifeq ($(OS),Windows_NT)
 LIBS_DIRS += $(LIBS_DIRS_WINDOWS)
 else
 LIBS_DIRS += $(LIBS_DIRS_LINUX)
 endif
 
+
 # Libraries to link, given by their name without the "lib" prefix (libm => m). It should contain the space-separated list of libraries that are used by your programs.
-LIBS            := 
+LIBS            	:= 
 # OS specific libraries
-LIBS_LINUX      :=
-LIBS_WINDOWS    := ws2_32
+LIBS_LINUX      	:=
+LIBS_WINDOWS    	:=
+
 ifeq ($(OS),Windows_NT)
 LIBS += $(LIBS_WINDOWS)
 else
@@ -64,35 +67,34 @@ endif
 ######################### COMPILER #########################
 
 # Compiler and linker for both C and C++.
-CC      := gcc
-CXX     := g++
+CC      			:= gcc
+CXX     			:= g++
 
 # /!\ Comment this line if you are using only C or only C++. Un-comment this line if you are using both C and C++.
 # CC 		= $(CXX)
 
 # Compiler options, applies to both C and C++ compiling as well as LD.
-CFLAGS          = -Wall -Wextra -Wpedantic
+CFLAGS          	:= -Wall -Wextra -Wpedantic
 
 # C Preprocessor options, to include directories.
-CPPFLAGS        = $(addprefix -I,$(INCLUDES))
+CPPFLAGS        	:= $(addprefix -I,$(INCLUDE_DIRS))
 
 # Linker options, to indicate where to search for linked libraries.
-LDFLAGS         = $(addprefix -L,$(LIBS_DIRS)) $(addprefix -l,$(LIBS))
-# Extra Linker options, to link libraries.
+LDFLAGS         	:= $(addprefix -L,$(LIBS_DIRS)) $(addprefix -l,$(LIBS))
 
 
 # Shortcuts for compiler and linker
-COMPILE.c       = $(CC) $(CFLAGS) $(CPPFLAGS) -c
-COMPILE.cxx     = $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c
-LINK.c          = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
-LINK.cxx        = $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)
+COMPILE.c       	:= $(CC) $(CFLAGS) $(CPPFLAGS) -c
+COMPILE.cxx     	:= $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c
+LINK.c          	:= $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+LINK.cxx        	:= $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)
 
 
 # Source files and object files set up.
 -include $(SOURCES_FILE_MK)
-SRC_FILES.c     := $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
-SRC_FILES.cxx   := $(filter %.cpp,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
-OBJ_FILES       := $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
+SRC_FILES.c     	:= $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
+SRC_FILES.cxx   	:= $(filter %.cpp,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
+OBJ_FILES       	:= $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
 
 
 # Release build set up. 
@@ -113,11 +115,11 @@ DEBUG_OBJS          := $(addprefix $(DIR_BUILD_DEBUG)/,$(OBJ_FILES))
 ########################## SHELL ###########################
 
 ifeq ($(OS),Windows_NT)
-MKDIR   := mkdir
-RM_RF   := rmdir /S/Q
+MKDIR   			:= mkdir
+RM_RF   			:= rmdir /S/Q
 else
-MKDIR   := mkdir -p
-RM_RF   := rm -rf
+MKDIR   			:= mkdir -p
+RM_RF   			:= rm -rf
 endif
 
 
@@ -222,8 +224,8 @@ endif
 
 
 # Release pre-build
-.PHONY: release_info release
-release_info:
+.PHONY: pre_release release
+pre_release:
 	@echo ======================= BUILD RELEASE ======================
 ifeq ($(filter-out \,$(SOURCES)),)
 ifeq ($(OS),Windows_NT)
@@ -240,8 +242,9 @@ ifeq ($(SRC_FILES.cxx),)
 else
 	@echo * Compiler :  $(CXX)
 endif
-	@echo * CFLAGS :    $(CFLAGS) $(RELEASE_FLAGS) 
-	@echo * LIBS :      $(LIBS)
+	@echo * CFLAGS :    $(CFLAGS) $(RELEASE_FLAGS)
+	@echo * CPPFLAGS :  $(CPPFLAGS)
+	@echo * LDFLAGS :   $(LDFLAGS)
 	@echo.
 	@echo Building "$(TARGET_NAME)" in Release mode...
 else
@@ -253,14 +256,15 @@ else
 	@echo "* Compiler :  $(CXX)"
 endif
 	@echo "* CFLAGS :    $(CFLAGS) $(RELEASE_FLAGS)"
-	@echo "* LIBS :      $(LIBS)"
+	@echo "* CPPFLAGS :  $(CPPFLAGS)"
+	@echo "* LDFLAGS :   $(LDFLAGS)"
 	@echo.
 	@echo "Building '$(TARGET_NAME)' in Release mode..."
 endif
 endif
 
 # Release build
-release: check_dirs_release release_info $(RELEASE_TARGET)
+release: check_dirs_release pre_release $(RELEASE_TARGET)
 	@echo Completed !
 	@echo ============================================================
 	@echo.
@@ -308,8 +312,8 @@ endif
 
 
 # Debug pre-build
-.PHONY: debug_info debug
-debug_info:
+.PHONY: pre_debug debug
+pre_debug:
 	@echo ======================== BUILD DEBUG =======================
 ifeq ($(filter-out \,$(SOURCES)),)
 ifeq ($(OS),Windows_NT)
@@ -327,7 +331,8 @@ else
 	@echo * Compiler :  $(CXX)
 endif
 	@echo * CFLAGS :    $(CFLAGS) $(DEBUG_FLAGS) 
-	@echo * LIBS :      $(LIBS)
+	@echo * CPPFLAGS :  $(CPPFLAGS)
+	@echo * LDFLAGS :   $(LDFLAGS)
 	@echo.
 	@echo Building "$(TARGET_NAME)" in Debug mode...
 else
@@ -339,14 +344,15 @@ else
 	@echo "* Compiler :  $(CXX)"
 endif
 	@echo "* CFLAGS :    $(CFLAGS) $(DEBUG_FLAGS)"
-	@echo "* LIBS :      $(LIBS)"
+	@echo "* CPPFLAGS :  $(CPPFLAGS)"
+	@echo "* LDFLAGS :   $(LDFLAGS)"
 	@echo.
 	@echo "Building '$(TARGET_NAME)' in Debug mode..."
 endif
 endif
 
 # Debug build
-debug: check_dirs_debug debug_info $(DEBUG_TARGET)
+debug: check_dirs_debug pre_debug $(DEBUG_TARGET)
 	@echo Completed !
 	@echo ============================================================
 	@echo.
@@ -418,7 +424,6 @@ endif
 	@echo ============================================================
 	@echo.
 
-
 # Clean objects, removing build directories
 .PHONY: cleanobj
 cleanobj:
@@ -437,8 +442,7 @@ endif
 	@echo.
 
 
-
-# Run the release executable with no arguments
+# Run the release target
 .PHONY: run
 run: 
 ifneq ($(filter $(RELEASE_TARGET),$(wildcard $(DIR_BIN_RELEASE)/*)),)
@@ -450,6 +454,21 @@ ifeq ($(OS),Windows_NT)
 else
 	$(warning Try to compile using the command "make release".)
 	$(error No executable "$(RELEASE_TARGET)" found.)
+endif
+endif
+
+# Run the debug target
+.PHONY: run_debug
+run_debug: 
+ifneq ($(filter $(DEBUG_TARGET),$(wildcard $(DIR_BIN_DEBUG)/*)),)
+	-@$(DEBUG_TARGET) $(ARGS)
+else
+ifeq ($(OS),Windows_NT)
+	$(warning Try to compile using the command "make release".)
+	$(error No executable "$(subst /,\,$(DEBUG_TARGET))" found.)
+else
+	$(warning Try to compile using the command "make release".)
+	$(error No executable "$(DEBUG_TARGET)" found.)
 endif
 endif
 
@@ -467,7 +486,8 @@ else
 	@echo * Compiler :  $(CXX)
 endif
 	@echo * CFLAGS :    $(CFLAGS)
-	@echo * LIBS :      $(LIBS)
+	@echo * CPPFLAGS :  $(CPPFLAGS)
+	@echo * LDFLAGS :   $(LDFLAGS)
 else
 	@echo "Configurations..."
 	@echo "* OS :        $(shell uname)"
@@ -477,7 +497,8 @@ else
 	@echo "* Compiler :  $(CXX)"
 endif
 	@echo "* CFLAGS :    $(CFLAGS)"
-	@echo "* LIBS :      $(LIBS)"
+	@echo "* CPPFLAGS :  $(CPPFLAGS)"
+	@echo "* LDFLAGS :   $(LDFLAGS)"
 endif
 	@echo.
 	@echo ============================================================
@@ -488,10 +509,10 @@ ifeq ($(OS),Windows_NT)
 	@echo C++ source files (.cpp) :
 	@echo : $(SRC_FILES.cxx)
 	@echo ------------------------------------------------------------
-	@echo Object files, Release :
+	@echo Object files, Release build :
 	@echo : $(RELEASE_OBJS)
 	@echo ------------------------------------------------------------
-	@echo Object files, Debug :
+	@echo Object files, Debug build :
 	@echo : $(DEBUG_OBJS)
 else
 	@echo "C source files (.c) :"
@@ -500,10 +521,10 @@ else
 	@echo "C++ source files (.cpp) :"
 	@echo ": $(SRC_FILES.cxx)"
 	@echo ------------------------------------------------------------
-	@echo Object files, Release :
+	@echo Object files, Release build :
 	@echo ": $(RELEASE_OBJS)"
 	@echo ------------------------------------------------------------
-	@echo Object files, Debug :
+	@echo Object files, Debug build :
 	@echo ": $(DEBUG_OBJS)"
 endif
 	@echo ============================================================
@@ -521,8 +542,8 @@ ifeq ($(OS),Windows_NT)
 	@echo     make debug          Build project, in Debug mode.
 	@echo     make clean          Clean project, remove directories "$(DIR_BIN)" and "$(DIR_BUILD)".
 	@echo     make cleanobj       Clean object files, remove directory "$(DIR_BUILD)".
-	@echo     make run            Run executable "$(TARGET_NAME)".
-	@echo     make run ARGS=""    Run executable "$(TARGET_NAME)" with arguments set to the ARGS variable.
+	@echo     make run            Run release target "$(RELEASE_TARGET)".
+	@echo     make run_debug      Run debug target "$(DEBUG_TARGET)".
 	@echo     make info           Display info about project.
 	@echo     make version        Display compilers version.
 	@echo     make help           Display this help message.
@@ -533,14 +554,15 @@ else
 	@echo "    make debug          Build project, in Debug mode."
 	@echo "    make clean          Clean project, remove directories '$(DIR_BIN)' and '$(DIR_BUILD)'."
 	@echo "    make cleanobj       Clean object files, remove directory '$(DIR_BUILD)'."
-	@echo "    make run            Run executable '$(TARGET_NAME)'."
-	@echo "    make run ARGS=      Run executable '$(TARGET_NAME)' with arguments set to the ARGS variable."
+	@echo "    make run            Run release target '$(RELEASE_TARGET)'."
+	@echo "    make run_debug      Run debug target '$(DEBUG_TARGET)'."
 	@echo "    make info           Display info about project."
 	@echo "    make version        Display compiler version."
 	@echo "    make help           Display this help message."
 endif
 	@echo ============================================================
 	@echo.
+
 
 ## Version info
 .PHONY: version
