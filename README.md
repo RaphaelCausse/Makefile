@@ -10,7 +10,7 @@ You can build the project in two modes : Release or Debug.
 
 By default, the build is in Debug mode.
 
-Declare all the source files you want to compile in the `src/sources.mk`.
+Declare all the source files you want to compile in the `src/__sources.mk`.
 
 Please follow recommended project layout.
 
@@ -37,7 +37,7 @@ To use this makefile template properly, please follow the project layout bellow.
   ├──── LICENSE.md
   │
   ├──┬─[ src ]
-  │  ├──── sources.mk   # Important: declare in that file all the source files to compile
+  │  ├──── __sources.mk   # Important: declare in that file all the source files to compile
   │  │
   │  ├──── main.c / main.cpp
   │  ├──── *.c / *.cpp
@@ -49,6 +49,10 @@ To use this makefile template properly, please follow the project layout bellow.
   │  └...
   │
   └...
+```
+Note that this layout of the `src` directory, including `__sources.mk` is automatically created when execution the command :
+```
+make init
 ```
 <br>
 
@@ -76,7 +80,7 @@ make init
 
 ## USAGE
 
-**Update** the `src/sources.mk` file with the files to compile.
+**Update** the `src/__sources.mk` file with the sources files to compile.
 
 **Update** the Makefile for compiler and linker options, check the variables in the `#### PATHS ####` and `#### COMPILER ####` sections.
 
@@ -91,19 +95,20 @@ make debug
 **Run** the program in Release mode (with optional arguments) :
 ```
 make run
-make run ARGS="your_arguments"
+make run ARGS="your arguments"
+```
+**Run** the program in Debug mode (with optional arguments) :
+```
+make run_debug
+make run_debug ARGS="your arguments"
 ```
 <br>
 
 ## FEATURES
 
-**Clean** the project directory by removing `bin` and `build` directories :
+**Clean** the project by removing objects files :
 ```
 make clean
-```
-**Clean** the object files, by removing `build` directory :
-```
-make cleanobj
 ```
 **Display** info about the project :
 ```
