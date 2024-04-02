@@ -155,7 +155,11 @@ else # For Linux
 endif
 endif
 	@echo Completed.
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo Declare all sources files in "$(subst /,\,$(SOURCES_FILE_MK))".
@@ -163,7 +167,11 @@ else # For Linux
 	@echo "Declare all sources files in '$(SOURCES_FILE_MK)'."
 endif
 	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
 
 ## Check existing project directories and create missing directories
@@ -213,7 +221,11 @@ endif
 endif
 	@echo Completed.
 	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
 
 ## Release pre-build
@@ -239,7 +251,11 @@ endif
 	@echo     CFLAGS:     $(CFLAGS) $(RELEASE_FLAGS)
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo Building target "$(RELEASE_TARGET)"...
 else # For Linux
 	@echo "Build configurations..."
@@ -252,7 +268,11 @@ endif
 	@echo "    CFLAGS:     $(CFLAGS) $(RELEASE_FLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo "Building target '$(RELEASE_TARGET)'..."
 endif
 endif
@@ -261,8 +281,19 @@ endif
 ## Release build
 release: check_directories pre_release $(RELEASE_TARGET)
 	@echo Completed.
-	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+	@echo ***** Build success *****
+else
+	@echo
+	@echo "***** Build success *****"
+endif
+	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
+	@echo.
+else
+	@echo
+endif
 
 
 ## Link object files for Release target.
@@ -332,7 +363,11 @@ endif
 	@echo     CFLAGS:     $(CFLAGS) $(DEBUG_FLAGS) 
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo Building target "$(DEBUG_TARGET)"...
 else # For Linux
 	@echo "Build configurations..."
@@ -345,7 +380,11 @@ endif
 	@echo "    CFLAGS:     $(CFLAGS) $(DEBUG_FLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo "Building target '$(DEBUG_TARGET)'..."
 endif
 endif
@@ -354,8 +393,19 @@ endif
 ## Debug build
 debug: check_directories pre_debug $(DEBUG_TARGET)
 	@echo Completed.
-	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+	@echo ***** Build success *****
+else
+	@echo
+	@echo "***** Build success *****"
+endif
+	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
+	@echo.
+else
+	@echo
+endif
 
 
 ## Link objects files for Debug target.
@@ -429,7 +479,11 @@ else # For Linux
 endif
 endif
 	@echo Completed.
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
 	@echo Cleaning targets...
 ifneq ($(filter $(RELEASE_TARGET),$(wildcard $(DIR_BIN_RELEASE)/*)),)
@@ -453,7 +507,11 @@ endif
 endif
 	@echo Completed.
 	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
 
 ## Run the release target
@@ -517,24 +575,36 @@ endif
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
 endif
+ifeq ($(OS),Windows_NT)
 	@echo.
-	@echo --------------------------------------------------------------------------------
+else
+	@echo
+endif
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo C source files (.c) :
 ifneq ($(SRC_FILES.c),)
 	@echo     $(SRC_FILES.c)
-endif
+endififeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo C++ source files (.cpp) :
 ifneq ($(SRC_FILES.cxx),)
 	@echo     $(SRC_FILES.cxx)
-endif
+endififeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo Object files, Release build :
 ifneq ($(RELEASE_OBJS),)
 	@echo     $(RELEASE_OBJS)
-endif
+endififeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo Object files, Debug build :
 ifneq ($(DEBUG_OBJS),)
 	@echo     $(DEBUG_OBJS)
@@ -544,24 +614,39 @@ else # For Linux
 ifneq ($(SRC_FILES.c),)
 	@echo "    $(SRC_FILES.c)"
 endif
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo "C++ source files (.cpp) :"
 ifneq ($(SRC_FILES.cxx),)
 	@echo "    $(SRC_FILES.cxx)"
-endif
+endififeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo Object files, Release build :
 ifneq ($(RELEASE_OBJS),)
 	@echo "    $(RELEASE_OBJS)"
 endif
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo Object files, Debug build :
 ifneq ($(DEBUG_OBJS),)
 	@echo "    $(DEBUG_OBJS)"
 endif
 endif
 	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
 
 ## Display usage help.
@@ -592,7 +677,11 @@ else
 	@echo "    make version        Display compiler version."
 endif
 	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
 
 ## Version info
@@ -601,10 +690,18 @@ version:
 	@echo ================================== C Compiler ==================================
 	@$(CC) --version
 	@$(CC) -v
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 	@echo ================================= C++ Compiler =================================
 	@$(CXX) --version
 	@$(CXX) -v
 	@echo ================================================================================
+ifeq ($(OS),Windows_NT)
 	@echo.
+else
+	@echo
+endif
 
