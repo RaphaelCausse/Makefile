@@ -42,7 +42,7 @@ endif
 LIBRAIRIES          := 
 ## OS specific libraries.
 LIBRAIRIES_LINUX    :=
-LIBRAIRIES_WINDOWS  := ws2_32
+LIBRAIRIES_WINDOWS  := mingw32
 
 ifeq ($(OS),Windows_NT) # For Windows
 LIBRAIRIES += $(LIBRAIRIES_WINDOWS)
@@ -577,8 +577,8 @@ ifeq ($(OS),Windows_NT) # For Windows
 	@echo     make run_debug      Run debug target "$(DEBUG_TARGET)".
 	@echo     make clean          Clean generated files, remove objects and targets.
 	@echo     make info           Display infos about project.
-	@echo     make version        Display compilers version.
 	@echo     make help           Display this help message.
+	@echo     make version        Display compilers version.
 else
 	@echo "Usage:"
 	@echo "    make                Build project, in default mode (Debug)."
@@ -588,8 +588,8 @@ else
 	@echo "    make run_debug      Run debug target '$(DEBUG_TARGET)'."
 	@echo "    make clean          Clean generated files, remove objects and targets."
 	@echo "    make info           Display infos about project."
+	@echo "    make help           Display this help message." 
 	@echo "    make version        Display compiler version."
-	@echo "    make help           Display this help message."
 endif
 	@echo ================================================================================
 	@echo.
@@ -598,8 +598,13 @@ endif
 ## Version info
 .PHONY: version
 version:
-	@echo ==================================== Version ===================================
+	@echo ================================== C Compiler ==================================
 	@$(CC) --version
+	@$(CC) -v
+	@echo.
+	@echo ================================= C++ Compiler =================================
 	@$(CXX) --version
+	@$(CXX) -v
 	@echo ================================================================================
 	@echo.
+
