@@ -155,9 +155,9 @@ else # For Linux
 endif
 endif
 	@echo Completed.
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -167,9 +167,9 @@ else # For Linux
 	@echo "Declare all sources files in '$(SOURCES_FILE_MK)'."
 endif
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -221,9 +221,9 @@ endif
 endif
 	@echo Completed.
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -251,11 +251,7 @@ endif
 	@echo     CFLAGS:     $(CFLAGS) $(RELEASE_FLAGS)
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
-ifeq ($(OS),Windows_NT)
 	@echo.
-else
-	@echo
-endif
 	@echo Building target "$(RELEASE_TARGET)"...
 else # For Linux
 	@echo "Build configurations..."
@@ -268,11 +264,7 @@ endif
 	@echo "    CFLAGS:     $(CFLAGS) $(RELEASE_FLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
-ifeq ($(OS),Windows_NT)
-	@echo.
-else
 	@echo
-endif
 	@echo "Building target '$(RELEASE_TARGET)'..."
 endif
 endif
@@ -281,17 +273,17 @@ endif
 ## Release build
 release: check_directories pre_release $(RELEASE_TARGET)
 	@echo Completed.
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
 	@echo ***** Build success *****
-else
+else # For Linux
 	@echo
 	@echo "***** Build success *****"
 endif
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -303,7 +295,6 @@ ifeq ($(OS),Windows_NT) # For Windows
 else # For Linux
 	@echo "    Link $(words $^) objects into '$(RELEASE_TARGET)'"
 endif
-
 ifeq ($(SRC_FILES.cxx),)
 	@$(CC) -o $@ $^ $(LDFLAGS)
 else
@@ -363,11 +354,7 @@ endif
 	@echo     CFLAGS:     $(CFLAGS) $(DEBUG_FLAGS) 
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
-ifeq ($(OS),Windows_NT)
 	@echo.
-else
-	@echo
-endif
 	@echo Building target "$(DEBUG_TARGET)"...
 else # For Linux
 	@echo "Build configurations..."
@@ -380,11 +367,7 @@ endif
 	@echo "    CFLAGS:     $(CFLAGS) $(DEBUG_FLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
-ifeq ($(OS),Windows_NT)
-	@echo.
-else
 	@echo
-endif
 	@echo "Building target '$(DEBUG_TARGET)'..."
 endif
 endif
@@ -393,17 +376,17 @@ endif
 ## Debug build
 debug: check_directories pre_debug $(DEBUG_TARGET)
 	@echo Completed.
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
 	@echo ***** Build success *****
-else
+else # For Linux
 	@echo
 	@echo "***** Build success *****"
 endif
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -415,7 +398,6 @@ ifeq ($(OS),Windows_NT) # For Windows
 else # For Linux
 	@echo "    Link $(words $^) objects into '$(DEBUG_TARGET)'"
 endif
-
 ifeq ($(SRC_FILES.cxx),)
 	@$(CC) -o $@ $^ $(LDFLAGS)
 else
@@ -479,9 +461,9 @@ else # For Linux
 endif
 endif
 	@echo Completed.
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -507,9 +489,9 @@ endif
 endif
 	@echo Completed.
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -563,6 +545,7 @@ endif
 	@echo     CFLAGS:     $(CFLAGS)
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
+	@echo.
 else # For Linux
 	@echo "Build configurations..."
 	@echo "    OS:         $(shell uname)"
@@ -574,11 +557,6 @@ endif
 	@echo "    CFLAGS:     $(CFLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
-endif
-
-ifeq ($(OS),Windows_NT) # For Windows
-	@echo.
-else # For Linux
 	@echo
 endif
 
@@ -646,7 +624,7 @@ ifeq ($(OS),Windows_NT) # For Windows
 	@echo     make info           Display infos about project.
 	@echo     make help           Display this help message.
 	@echo     make version        Display compilers version.
-else
+else # For Linux
 	@echo "Usage:"
 	@echo "    make                Build project, in default mode (Debug)."
 	@echo "    make release        Build project, in Release mode."
@@ -659,9 +637,9 @@ else
 	@echo "    make version        Display compiler version."
 endif
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
