@@ -575,76 +575,58 @@ endif
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
 endif
-ifeq ($(OS),Windows_NT)
+
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
+
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo C source files (.c) :
 ifneq ($(SRC_FILES.c),)
-	@echo     $(SRC_FILES.c)
-endififeq ($(OS),Windows_NT)
-	@echo.
-else
-	@echo
+	@echo     $(subst  /,\,$(SRC_FILES.c))
 endif
+	@echo.
 	@echo C++ source files (.cpp) :
 ifneq ($(SRC_FILES.cxx),)
-	@echo     $(SRC_FILES.cxx)
-endififeq ($(OS),Windows_NT)
-	@echo.
-else
-	@echo
+	@echo     $(subst  /,\,$(SRC_FILES.cxx))
 endif
+	@echo.
 	@echo Object files, Release build :
 ifneq ($(RELEASE_OBJS),)
-	@echo     $(RELEASE_OBJS)
-endififeq ($(OS),Windows_NT)
-	@echo.
-else
-	@echo
+	@echo     $(subst  /,\,$(RELEASE_OBJS))
 endif
+	@echo.
 	@echo Object files, Debug build :
 ifneq ($(DEBUG_OBJS),)
-	@echo     $(DEBUG_OBJS)
+	@echo     $(subst  /,\,$(DEBUG_OBJS))
 endif
 else # For Linux 
 	@echo "C source files (.c) :"
 ifneq ($(SRC_FILES.c),)
 	@echo "    $(SRC_FILES.c)"
 endif
-ifeq ($(OS),Windows_NT)
-	@echo.
-else
 	@echo
-endif
 	@echo "C++ source files (.cpp) :"
 ifneq ($(SRC_FILES.cxx),)
 	@echo "    $(SRC_FILES.cxx)"
-endififeq ($(OS),Windows_NT)
-	@echo.
-else
-	@echo
 endif
+	@echo
 	@echo Object files, Release build :
 ifneq ($(RELEASE_OBJS),)
 	@echo "    $(RELEASE_OBJS)"
 endif
-ifeq ($(OS),Windows_NT)
-	@echo.
-else
 	@echo
-endif
 	@echo Object files, Debug build :
 ifneq ($(DEBUG_OBJS),)
 	@echo "    $(DEBUG_OBJS)"
 endif
 endif
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
@@ -690,18 +672,18 @@ version:
 	@echo ================================== C Compiler ==================================
 	@$(CC) --version
 	@$(CC) -v
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 	@echo ================================= C++ Compiler =================================
 	@$(CXX) --version
 	@$(CXX) -v
 	@echo ================================================================================
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
-else
+else # For Linux
 	@echo
 endif
 
