@@ -10,7 +10,7 @@ You can build the project in two modes : Release or Debug.
 
 By default, the build is in Debug mode.
 
-Declare all the source files you want to compile in the `src/__sources.mk`.
+Declare all the source files you want to compile in the `build/sources.mk`.
 
 Please follow recommended project layout.
 
@@ -37,7 +37,6 @@ To use this makefile template properly, please follow the project layout bellow.
   ├──── LICENSE.md
   │
   ├──┬─[ src ]
-  │  ├──── __sources.mk   # Important: declare in that file all the source files to compile
   │  │
   │  ├──── main.c / main.cpp
   │  ├──── *.c / *.cpp
@@ -48,12 +47,14 @@ To use this makefile template properly, please follow the project layout bellow.
   │  │  └──── *.h / *.hpp
   │  └...
   │
+  ├──┬─[ build ]
+  │  ├──── sources.mk   # Important: declare in that file all the source files to compile
+  │  ├──── *.o
+  │  └...
+  │
   └...
 ```
-Note that this layout of the `src` directory, including `__sources.mk` is automatically created when execution the command :
-```
-make init
-```
+Note that this layout of the `src` and `build` directories, including `build/sources.mk` are automatically created when executing the command : `make init`
 <br>
 
 ## INSTALLATION
@@ -71,16 +72,17 @@ cd Makefile_C_Cpp
 cp Makefile <path_to_your_project>
 cd <path_to_your_project>
 ```
-**Initialize** the project layout, in your project directory :
-```
-make init
-```
 
 <br>
 
 ## USAGE
 
-**Update** the `src/__sources.mk` file with the sources files to compile.
+**Initialize** the project layout, in your project directory :
+```
+make init
+```
+
+**Update** the `build/sources.mk` file with the sources files to compile.
 
 **Update** the Makefile for compiler and linker options, check the variables in the `#### PATHS ####` and `#### COMPILER ####` sections.
 
