@@ -34,7 +34,7 @@ INCLUDES_DIRS_WINDOWS  :=
 ifeq ($(OS),Windows_NT) # For Windows
 INCLUDES_DIRS += $(INCLUDES_DIRS_WINDOWS)
 else # For Linux
-INCLUDES_DIRS += $(INCLUDES_DIRS_LINUX)
+INCLUDES_DIRS += $(subst /,\,$(INCLUDES_DIRS_LINUX))
 endif
 
 
@@ -60,7 +60,7 @@ LIBRARIES_DIRS_WINDOWS  :=
 ifeq ($(OS),Windows_NT) # For Windows
 LIBRARIES_DIRS += $(LIBRARIES_DIRS_WINDOWS)
 else # For Linux
-LIBRARIES_DIRS += $(LIBRARIES_DIRS_LINUX)
+LIBRARIES_DIRS += $(subst /,\,$(LIBRARIES_DIRS_LINUX))
 endif
 
 
