@@ -74,7 +74,7 @@ CXX  := g++
 # CC 		= $(CXX)
 
 ## Compiler options, applies to both C and C++ compiling as well as LD.
-CFLAGS    := -Wall -Wextra -Wpedantic
+CFLAGS    := -pedantic -Wall
 
 ## C Preprocessor options, to include directories.
 CPPFLAGS  := $(addprefix -I,$(INCLUDES_DIRS))
@@ -154,7 +154,7 @@ endif
 ifeq ($(filter $(SOURCES_FILE_MK),$(wildcard $(DIR_BUILD)/*.mk)),)
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo     Create file "$(subst /,\,$(SOURCES_FILE_MK))"
-	@echo # Declare all sources files in the SOURCES variable, without "src\" prefix.> $(subst /,\,$(SOURCES_FILE_MK))
+	@echo # Declare all sources files in the SOURCES variable, without "src/" prefix.> $(subst /,\,$(SOURCES_FILE_MK))
 	@echo # Write source files names on one line separated by a space, or on multiple lines by adding a backslash at the end and going on a new line (no other characters after the backslash).>> $(subst /,\,$(SOURCES_FILE_MK))
 	@echo SOURCES := \>> $(subst /,\,$(SOURCES_FILE_MK))
 else # For Linux
@@ -453,21 +453,21 @@ clean:
 
 ifneq ($(wildcard $(DIR_BUILD_RELEASE)/*.o),)
 ifeq ($(OS),Windows_NT) # For Windows
-	@echo     Delete $(words $(wildcard $(DIR_BUILD_RELEASE)/*.o)) release objects
-	@$(RM) $(subst /,\,$(wildcard $(DIR_BUILD_RELEASE)/*.o))
+	@echo     Delete $(words $(RELEASE_OBJS)) release objects
+	@$(RM) $(subst /,\,$(RELEASE_OBJS))
 else # For Linux
-	@echo "    Delete $(words $(wildcard $(DIR_BUILD_RELEASE)/*.o)) release objects"
-	@$(RM) $(wildcard $(DIR_BUILD_RELEASE)/*.o)
+	@echo "    Delete $(words $(RELEASE_OBJS)) release objects"
+	@$(RM) $(RELEASE_OBJS)
 endif
 endif
 
 ifneq ($(wildcard $(DIR_BUILD_DEBUG)/*.o),)
 ifeq ($(OS),Windows_NT) # For Windows
-	@echo     Delete $(words $(wildcard $(DIR_BUILD_DEBUG)/*.o)) debug objects
-	@$(RM) $(subst /,\,$(wildcard $(DIR_BUILD_DEBUG)/*.o))
+	@echo     Delete $(words $(DEBUG_OBJS)) debug objects
+	@$(RM) $(subst /,\,$(DEBUG_OBJS))
 else # For Linux
-	@echo "    Delete $(words $(wildcard $(DIR_BUILD_DEBUG)/*.o)) debug objects"
-	@$(RM) $(wildcard $(DIR_BUILD_DEBUG)/*.o)
+	@echo "    Delete $(words $(DEBUG_OBJS)) debug objects"
+	@$(RM) $(DEBUG_OBJS)
 endif
 endif
 	@echo Completed.
