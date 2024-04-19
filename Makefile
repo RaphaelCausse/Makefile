@@ -318,11 +318,10 @@ endif
 $(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.c
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
-		echo     Create directory "$(dir $@)" && $(MKDIR) "$(subst /,\,$(dir $@))" \
+		$(MKDIR) "$(subst /,\,$(dir $@))" \
 	)
 	@echo     Compile "$<" into "$@"
 else # For Linux
-	@echo "    Create directory '$(dir $@)'"
 	@$(MKDIR) $(dir $@)
 	@echo "    Compile '$<' into '$@'"
 endif
@@ -333,11 +332,10 @@ endif
 $(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.cpp
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
-		echo     Create directory "$(dir $@)" && $(MKDIR) "$(subst /,\,$(dir $@))" \
+		$(MKDIR) "$(subst /,\,$(dir $@))" \
 	)
 	@echo     Compile "$<" into "$@"
 else # For Linux
-	@echo "    Create directory '$(dir $@)'"
 	@$(MKDIR) $(dir $@)
 	@echo "    Compile '$<' into '$@'"
 endif
@@ -421,11 +419,10 @@ endif
 $(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.c
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
-		echo     Create directory "$(dir $@)" && $(MKDIR) "$(subst /,\,$(dir $@))" \
+		$(MKDIR) "$(subst /,\,$(dir $@))" \
 	)
 	@echo     Compile "$<" into "$@"
 else # For Linux
-	@echo "    Create directory '$(dir $@)'"
 	@$(MKDIR) $(dir $@)
 	@echo "    Compile '$<' into '$@'"
 endif
@@ -436,11 +433,10 @@ endif
 $(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.cpp
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
-		echo     Create directory "$(dir $@)" && $(MKDIR) "$(subst /,\,$(dir $@))" \
+		$(MKDIR) "$(subst /,\,$(dir $@))" \
 	)
 	@echo     Compile "$<" into "$@"
 else # For Linux
-	@echo "    Create directory '$(dir $@)'"
 	@$(MKDIR) $(dir $@)
 	@echo "    Compile '$<' into '$@'"
 endif
