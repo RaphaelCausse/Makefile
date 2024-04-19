@@ -102,7 +102,7 @@ RELEASE_OBJS        := $(addprefix $(DIR_BUILD_RELEASE)/,$(OBJ_FILES))
 DIR_BIN_DEBUG       := $(DIR_BIN)/debug
 DIR_BUILD_DEBUG     := $(DIR_BUILD)/debug
 DEBUG_TARGET        := $(DIR_BIN_DEBUG)/$(TARGET_NAME)
-DEBUG_FLAGS         := -O0 -g
+DEBUG_FLAGS         := -O0 -g3
 DEBUG_OBJS          := $(addprefix $(DIR_BUILD_DEBUG)/,$(OBJ_FILES))
 
 
@@ -112,10 +112,12 @@ ifeq ($(OS),Windows_NT) # For Windows
 MKDIR  := mkdir
 RM     := del /f/q
 RM_RF  := rmdir /S/Q
+CP     := copy /y
 else # For Linux
 MKDIR  := mkdir -p
 RM     := rm -f
 RM_RF  := rm -rf
+CP     := cp
 endif
 
 
@@ -451,23 +453,27 @@ clean:
 	@echo ==================================== Clean =====================================
 	@echo Cleaning objects...
 
-ifneq ($(wildcard $(DIR_BUILD_RELEASE)/*.o),)
+ifneq ($(wildcard $(DIR_BUILD_RELEASE)/*),)
 ifeq ($(OS),Windows_NT) # For Windows
-	@echo     Delete $(words $(RELEASE_OBJS)) release objects
-	@$(RM) $(subst /,\,$(RELEASE_OBJS))
+	@echo     Delete objects in "$(DIR_BUILD_RELEASE)" directory
+	@$(RM_RF) $(subst /,\,$(DIR_BUILD_RELEASE))
+	@$(MKDIR) $(subst /,\,$(DIR_BUILD_RELEASE))
 else # For Linux
-	@echo "    Delete $(words $(RELEASE_OBJS)) release objects"
-	@$(RM) $(RELEASE_OBJS)
+	@echo "    Delete objects in '$(DIR_BUILD_RELEASE)' directory"
+	@$(RM_RF) $(DIR_BUILD_RELEASE)
+	@$(MKDIR) $(DIR_BUILD_RELEASE)
 endif
 endif
 
-ifneq ($(wildcard $(DIR_BUILD_DEBUG)/*.o),)
+ifneq ($(wildcard $(DIR_BUILD_DEBUG)/*),)
 ifeq ($(OS),Windows_NT) # For Windows
-	@echo     Delete $(words $(DEBUG_OBJS)) debug objects
-	@$(RM) $(subst /,\,$(DEBUG_OBJS))
+	@echo     Delete objects in "$(DIR_BUILD_DEBUG)" directory
+	@$(RM_RF) $(subst /,\,$(DIR_BUILD_DEBUG))
+	@$(MKDIR) $(subst /,\,$(DIR_BUILD_DEBUG))
 else # For Linux
-	@echo "    Delete $(words $(DEBUG_OBJS)) debug objects"
-	@$(RM) $(DEBUG_OBJS)
+	@echo "    Delete objects in '$(DIR_BUILD_DEBUG)' directory"
+	@$(RM_RF) $(DIR_BUILD_DEBUG)
+	@$(MKDIR) $(DIR_BUILD_DEBUG)
 endif
 endif
 	@echo Completed.
