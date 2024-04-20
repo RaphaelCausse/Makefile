@@ -153,7 +153,7 @@ else # For Linux
 endif
 endif
 
-ifeq ($(filter $(SOURCES_FILE_MK),$(wildcard $(DIR_BUILD)/*.mk)),)
+ifeq ($(filter $(SOURCES_FILE_MK),$(wildcard $(SOURCES_FILE_MK))),)
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo     Create file "$(subst /,\,$(SOURCES_FILE_MK))"
 	@echo # Declare all sources files in the SOURCES variable, without "src/" prefix.> $(subst /,\,$(SOURCES_FILE_MK))
