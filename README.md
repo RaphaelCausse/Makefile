@@ -6,11 +6,11 @@
 
 Makefile template for small to medium sized C/C++ projects, for Linux and Windows.
 
-You can build the project in two modes : Release or Debug.
+You can build the project in two modes : **Release** or **Debug**.
 
-By default, the build is in Debug mode.
+By default, the build is in **Debug** mode.
 
-Declare all the source files you want to compile in the `build/sources.mk`.
+Declare all the source files you want to compile in the `sources.mk`.
 
 Please follow recommended project layout.
 
@@ -32,29 +32,21 @@ To use this makefile template properly, please follow the project layout bellow.
 ```
 ──┬─[ Project ]
   │
-  ├──── Makefile
-  ├──── README.md
   ├──── LICENSE.md
+  ├──── README.md
+  │
+  ├──── Makefile
+  ├──── sources.mk   # Important: declare in that file all the source files to compile
   │
   ├──┬─[ src ]
   │  │
-  │  ├──── main.c / main.cpp
   │  ├──── *.c / *.cpp
   │  ├──── *.h / *.hpp
-  │  │
-  │  ├──┬─[ module ]
-  │  │  ├──── *.c / *.cpp
-  │  │  └──── *.h / *.hpp
-  │  └...
+  │  ...
   │
-  ├──┬─[ build ]
-  │  ├──── sources.mk   # Important: declare in that file all the source files to compile
-  │  ├──── *.o
-  │  └...
-  │
-  └...
+  ...
 ```
-Note that this layout of the `src` and `build` directories, including `build/sources.mk` are automatically created when executing the command : `make init`
+Note that this layout of the project, including `src` directory and `sources.mk` file, is automatically created when executing the command : `make init`
 <br>
 
 ## INSTALLATION
@@ -70,21 +62,20 @@ cd Makefile_C_Cpp
 **Copy** the Makefile in your project at root level of your project directory.
 ```
 cp Makefile <path_to_your_project>
+```
+**Initialize** the project layout, in your project directory :
+```
 cd <path_to_your_project>
+make init
 ```
 
 <br>
 
 ## USAGE
 
-**Initialize** the project layout, in your project directory :
-```
-make init
-```
+**Update** the `sources.mk` file with the sources files to compile.
 
-**Update** the `build/sources.mk` file with the sources files to compile.
-
-**Update** the Makefile for compiler and linker options, check the variables in the `#### PATHS ####` and `#### COMPILER ####` sections.
+**Update** the Makefile for compiler and linker options for your needs. Check the variables in the `#### PATHS ####` and `#### COMPILER ####` sections.
 
 **Build** the project in Release mode :
 ```
@@ -94,21 +85,21 @@ make release
 ```
 make debug
 ```
-**Run** the program in Release mode (with optional arguments) :
+**Run** the target in Release mode (with optional arguments) :
 ```
 make run
 make run ARGS="your arguments"
 ```
-**Run** the program in Debug mode (with optional arguments) :
+**Run** the target in Debug mode (with optional arguments) :
 ```
-make run_debug
-make run_debug ARGS="your arguments"
+make rund
+make rund ARGS="your arguments"
 ```
 <br>
 
 ## FEATURES
 
-**Clean** the project by removing objects files :
+**Clean** the project by removing generated files :
 ```
 make clean
 ```
@@ -124,4 +115,4 @@ make help
 
 ## AUTHOR
 
-Raphael CAUSSE.
+Raphael CAUSSE

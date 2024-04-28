@@ -516,8 +516,8 @@ endif
 
 
 ## Run the debug target
-.PHONY: run_debug
-run_debug: 
+.PHONY: rund
+rund: 
 	@echo =============================== Run Debug Target ===============================
 ifneq ($(filter $(DEBUG_TARGET),$(wildcard $(DIR_BIN_DEBUG)/*)),)
 	-@$(DEBUG_TARGET) $(ARGS)
@@ -652,6 +652,7 @@ version:
 	@echo ================================== C Compiler ==================================
 	@$(CC) --version
 	@$(CC) -v
+	@echo ================================================================================
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo.
 else # For Linux
@@ -666,4 +667,3 @@ ifeq ($(OS),Windows_NT) # For Windows
 else # For Linux
 	@echo
 endif
-
