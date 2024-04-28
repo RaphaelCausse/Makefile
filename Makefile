@@ -21,8 +21,8 @@ DIR_BUILD   := build
 DIR_SRC     := src
 
 
-## Sources list file, where all source files to compile should be declared, without the "src/" path prefix.
-SOURCES_FILE_MK  := $(DIR_BUILD)/sources.mk
+## Sources list file, where all source files to compile should be declared, within the "src/" directory.
+SOURCES_FILE_MK  := sources.mk
 
 
 ## Include directories, indicate where to search for included header files. It should contain the space-separated list of directories where header files can be found.
@@ -74,7 +74,7 @@ CXX  := g++
 # CC 		= $(CXX)
 
 ## Compiler options, applies to both C and C++ compiling as well as LD.
-CFLAGS    := -pedantic -Wall
+CFLAGS    := -pedantic -Wall -Wpedantic
 
 ## C Preprocessor options, to include directories.
 CPPFLAGS  := $(addprefix -I,$(INCLUDES_DIRS))
@@ -143,25 +143,15 @@ else # For Linux
 endif
 endif
 
-ifeq ($(filter $(DIR_BUILD),$(wildcard *)),)
-ifeq ($(OS),Windows_NT) # For Windows
-	@echo     Create directory "$(DIR_BUILD)"
-	@$(MKDIR) $(subst /,\,$(DIR_BUILD))
-else # For Linux
-	@echo "    Create directory '$(DIR_BUILD)'"
-	@$(MKDIR) $(DIR_BUILD)
-endif
-endif
-
 ifeq ($(filter $(SOURCES_FILE_MK),$(wildcard $(SOURCES_FILE_MK))),)
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo     Create file "$(subst /,\,$(SOURCES_FILE_MK))"
-	@echo # Declare all sources files in the SOURCES variable, without "src/" prefix.> $(subst /,\,$(SOURCES_FILE_MK))
+	@echo # Declare all sources files in the SOURCES variable, within the "src/" directory.> $(subst /,\,$(SOURCES_FILE_MK))
 	@echo # Write source files names on one line separated by a space, or on multiple lines by adding a backslash at the end and going on a new line (no other characters after the backslash).>> $(subst /,\,$(SOURCES_FILE_MK))
 	@echo SOURCES := \>> $(subst /,\,$(SOURCES_FILE_MK))
 else # For Linux
 	@echo "    Create file '$(SOURCES_FILE_MK)'"
-	@echo "# Declare all sources files in the SOURCES variable, with 'src/' prefix." > $(SOURCES_FILE_MK)
+	@echo "# Declare all sources files in the SOURCES variable, within the 'src/' directory." > $(SOURCES_FILE_MK)
 	@echo "# Write sources files names on one line separated by a space, or on multiple lines by adding a backslash at the end and going on a new line (no other characters after the backslash).">> $(SOURCES_FILE_MK)
 	@echo "SOURCES := \">> $(SOURCES_FILE_MK)
 endif
