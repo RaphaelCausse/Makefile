@@ -16,7 +16,7 @@ endif
 ########################## PATHS ###########################
 
 ## Directories path set up.
-DIR_BIN	    := bin
+DIR_BIN     := bin
 DIR_BUILD   := build
 DIR_SRC     := src
 
@@ -71,7 +71,7 @@ CC   := gcc
 CXX  := g++
 
 ## /!\ Comment the line under if you are using only C or only C++. Un-comment the line under if you are using both C and C++.
-# CC 		= $(CXX)
+# CC  := $(CXX)
 
 ## Compiler options, applies to both C and C++ compiling as well as LD.
 CFLAGS    := -pedantic -Wall -Wpedantic
@@ -85,9 +85,9 @@ LDFLAGS   := $(addprefix -l,$(LIBRAIRIES)) $(addprefix -L,$(LIBRARIES_DIRS))
 
 ## Source files and object files set up.
 -include $(SOURCES_FILE_MK)
-SRC_FILES.c     	:= $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
-SRC_FILES.cxx   	:= $(filter %.cpp,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
-OBJ_FILES       	:= $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
+SRC_FILES.c     := $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
+SRC_FILES.cxx   := $(filter %.cpp,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
+OBJ_FILES       := $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
 
 
 ## Release build set up. 
@@ -123,11 +123,11 @@ endif
 
 ########################## RULES ###########################
 
-## Default build.
+#### Default build.
 default: debug
 
 
-## Initialize project layout
+#### Initialize project layout
 .PHONY: init
 init:
 	@echo ================================== Initialize ==================================
@@ -176,7 +176,7 @@ else # For Linux
 endif
 
 
-## Check existing project directories and create missing directories
+#### Check existing project directories and create missing directories
 .PHONY: check_directories
 check_directories:
 	@echo ================================= Directories ==================================
@@ -230,7 +230,7 @@ else # For Linux
 endif
 
 
-## Release pre-build
+#### Release pre-build
 .PHONY: pre_release release
 pre_release:
 	@echo ================================ Build Release =================================
@@ -272,7 +272,7 @@ endif
 endif
 
 
-## Release build
+#### Release build
 release: check_directories pre_release $(RELEASE_TARGET)
 	@echo Completed.
 ifeq ($(OS),Windows_NT) # For Windows
@@ -290,7 +290,7 @@ else # For Linux
 endif
 
 
-## Link object files for Release target.
+#### Link object files for Release target.
 $(RELEASE_TARGET): $(RELEASE_OBJS)
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo     Link $(words $^) objects into "$(RELEASE_TARGET)"
@@ -304,7 +304,7 @@ else
 endif
 
 
-## Compile C source files for Release build.
+#### Compile C source files for Release build.
 $(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.c
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
@@ -318,7 +318,7 @@ endif
 	@$(CC) $(CPPFLAGS) $(CFLAGS) $(RELEASE_FLAGS) -o $@ -c $<
 
 
-## Compile C++ source files for Release build.
+#### Compile C++ source files for Release build.
 $(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.cpp
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
@@ -332,7 +332,7 @@ endif
 	@$(CXX) $(CPPFLAGS) $(CFLAGS) $(RELEASE_FLAGS) -o $@ -c $<
 
 
-## Debug pre-build
+#### Debug pre-build
 .PHONY: pre_debug debug
 pre_debug:
 	@echo ================================= Build Debug ==================================
@@ -373,7 +373,7 @@ endif
 endif
 
 
-## Debug build
+#### Debug build
 debug: check_directories pre_debug $(DEBUG_TARGET)
 	@echo Completed.
 ifeq ($(OS),Windows_NT) # For Windows
@@ -391,7 +391,7 @@ else # For Linux
 endif
 
 
-## Link objects files for Debug target.
+#### Link objects files for Debug target.
 $(DEBUG_TARGET): $(DEBUG_OBJS)
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo     Link $(words $^) objects into "$(DEBUG_TARGET)"
@@ -405,7 +405,7 @@ else
 endif
 
 
-## Compile C source files for Debug build.
+#### Compile C source files for Debug build.
 $(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.c
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
@@ -419,7 +419,7 @@ endif
 	@$(CC) $(CPPFLAGS) $(CFLAGS) $(DEBUG_FLAGS) -o $@ -c $<
 
 
-## Compile C++ source files for Debug build.
+#### Compile C++ source files for Debug build.
 $(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.cpp
 ifeq ($(OS),Windows_NT) # For Windows
 	@if not exist "$(dir $@)" (\
@@ -433,7 +433,7 @@ endif
 	@$(CXX) $(CPPFLAGS) $(CFLAGS) $(DEBUG_FLAGS) -o $@ -c $<
 
 
-## Clean generated files, remove objects and targets.
+#### Clean generated files, remove objects and targets.
 .PHONY: clean
 clean:
 	@echo ==================================== Clean =====================================
@@ -498,7 +498,7 @@ else # For Linux
 endif
 
 
-## Run the release target
+#### Run the release target
 .PHONY: run
 run:
 	@echo ============================== Run Release Target ==============================
@@ -515,7 +515,7 @@ endif
 endif
 
 
-## Run the debug target
+#### Run the debug target
 .PHONY: rund
 rund: 
 	@echo =============================== Run Debug Target ===============================
@@ -532,7 +532,7 @@ endif
 endif
 
 
-## Display project files informations.
+#### Display project files informations.
 .PHONY: info
 info:
 	@echo ================================ Project Infos =================================
@@ -611,7 +611,7 @@ else # For Linux
 endif
 
 
-## Display usage help.
+#### Display usage help.
 .PHONY: help
 help:
 	@echo ===================================== Help =====================================
@@ -621,7 +621,7 @@ ifeq ($(OS),Windows_NT) # For Windows
 	@echo     make release        Build project, in Release mode.
 	@echo     make debug          Build project, in Debug mode.
 	@echo     make run            Run release target "$(RELEASE_TARGET)".
-	@echo     make run_debug      Run debug target "$(DEBUG_TARGET)".
+	@echo     make rund           Run debug target "$(DEBUG_TARGET)".
 	@echo     make clean          Clean generated files, remove objects and targets.
 	@echo     make info           Display infos about project.
 	@echo     make help           Display this help message.
@@ -632,7 +632,7 @@ else # For Linux
 	@echo "    make release        Build project, in Release mode."
 	@echo "    make debug          Build project, in Debug mode."
 	@echo "    make run            Run release target '$(RELEASE_TARGET)'."
-	@echo "    make run_debug      Run debug target '$(DEBUG_TARGET)'."
+	@echo "    make rund           Run debug target '$(DEBUG_TARGET)'."
 	@echo "    make clean          Clean generated files, remove objects and targets."
 	@echo "    make info           Display infos about project."
 	@echo "    make help           Display this help message." 
@@ -646,7 +646,7 @@ else # For Linux
 endif
 
 
-## Version info
+#### Version info
 .PHONY: version
 version:
 	@echo ================================== C Compiler ==================================
