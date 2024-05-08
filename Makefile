@@ -1,15 +1,15 @@
 ############################################################
-# Makefile template for C/C++ projects.
+# Makefile template for small/meduim C projects.
 # Please follow recommended project layout in README.
 # Author : Raphael CAUSSE
 ############################################################
 
 
 ## Target executable name
-TARGET_NAME := prog
+TARGET_EXE := prog
 
 ifeq ($(OS),Windows_NT) # For Windows
-TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
+TARGET_EXE := $(addsuffix .exe,$(TARGET_EXE))
 endif
 
 
@@ -22,11 +22,11 @@ DIR_SRC     := src
 
 
 ## Sources list file, where all source files to compile should be declared, within the "src/" directory.
-SOURCES_FILE_MK  := sources.mk
+SOURCES_FILE_MK        := sources.mk
 
 
 ## Include directories, indicate where to search for included header files. It should contain the space-separated list of directories where header files can be found.
-INCLUDES_DIRS          := src
+INCLUDES_DIRS          := 
 ## OS specific includes directories.
 INCLUDES_DIRS_LINUX    :=
 INCLUDES_DIRS_WINDOWS  :=
@@ -42,7 +42,7 @@ endif
 LIBRAIRIES          := 
 ## OS specific libraries.
 LIBRAIRIES_LINUX    :=
-LIBRAIRIES_WINDOWS  := mingw32
+LIBRAIRIES_WINDOWS  :=
 
 ifeq ($(OS),Windows_NT) # For Windows
 LIBRAIRIES += $(LIBRAIRIES_WINDOWS)
@@ -66,34 +66,29 @@ endif
 
 ######################### COMPILER #########################
 
-## Compiler and linker for both C and C++.
-CC   := gcc
-CXX  := g++
+## Compiler and linker.
+CC        := gcc
 
-## /!\ Comment the line under if you are using only C or only C++. Un-comment the line under if you are using both C and C++.
-# CC  := $(CXX)
-
-## Compiler options, applies to both C and C++ compiling as well as LD.
+## Compiler options.
 CFLAGS    := -pedantic -Wall -Wpedantic
 
-## C Preprocessor options, to include directories.
+## Preprocessor options.
 CPPFLAGS  := $(addprefix -I,$(INCLUDES_DIRS))
 
-## Linker options, to indicate where to search for linked libraries.
+## Linker options.
 LDFLAGS   := $(addprefix -l,$(LIBRAIRIES)) $(addprefix -L,$(LIBRARIES_DIRS))
 
 
 ## Source files and object files set up.
 -include $(SOURCES_FILE_MK)
 SRC_FILES.c     := $(filter %.c,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
-SRC_FILES.cxx   := $(filter %.cpp,$(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES))))
 OBJ_FILES       := $(addsuffix .o,$(basename $(filter-out \,$(SOURCES))))
 
 
 ## Release build set up. 
 DIR_BIN_RELEASE     := $(DIR_BIN)/release
 DIR_BUILD_RELEASE   := $(DIR_BUILD)/release
-RELEASE_TARGET      := $(DIR_BIN_RELEASE)/$(TARGET_NAME)
+RELEASE_TARGET      := $(DIR_BIN_RELEASE)/$(TARGET_EXE)
 RELEASE_FLAGS       := -O2
 RELEASE_OBJS        := $(addprefix $(DIR_BUILD_RELEASE)/,$(OBJ_FILES))
 
@@ -101,7 +96,7 @@ RELEASE_OBJS        := $(addprefix $(DIR_BUILD_RELEASE)/,$(OBJ_FILES))
 ## Debug build set up.
 DIR_BIN_DEBUG       := $(DIR_BIN)/debug
 DIR_BUILD_DEBUG     := $(DIR_BUILD)/debug
-DEBUG_TARGET        := $(DIR_BIN_DEBUG)/$(TARGET_NAME)
+DEBUG_TARGET        := $(DIR_BIN_DEBUG)/$(TARGET_EXE)
 DEBUG_FLAGS         := -O0 -g3
 DEBUG_OBJS          := $(addprefix $(DIR_BUILD_DEBUG)/,$(OBJ_FILES))
 
@@ -245,11 +240,7 @@ else
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo Build configurations...
 	@echo     OS:         $(OS)
-ifeq ($(SRC_FILES.cxx),)
 	@echo     Compiler:   $(CC)
-else
-	@echo     Compiler:   $(CXX)
-endif
 	@echo     CFLAGS:     $(CFLAGS) $(RELEASE_FLAGS)
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
@@ -258,11 +249,7 @@ endif
 else # For Linux
 	@echo "Build configurations..."
 	@echo "    OS:         $(shell uname)"
-ifeq ($(SRC_FILES.cxx),)
 	@echo "    Compiler:   $(CC)"
-else
-	@echo "    Compiler:   $(CXX)"
-endif
 	@echo "    CFLAGS:     $(CFLAGS) $(RELEASE_FLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
@@ -297,11 +284,7 @@ ifeq ($(OS),Windows_NT) # For Windows
 else # For Linux
 	@echo "    Link $(words $^) objects into '$(RELEASE_TARGET)'"
 endif
-ifeq ($(SRC_FILES.cxx),)
 	@$(CC) -o $@ $^ $(LDFLAGS)
-else
-	@$(CXX) -o $@ $^ $(LDFLAGS)
-endif
 
 
 #### Compile C source files for Release build.
@@ -315,21 +298,7 @@ else # For Linux
 	@$(MKDIR) $(dir $@)
 	@echo "    Compile '$<' into '$@'"
 endif
-	@$(CC) $(CPPFLAGS) $(CFLAGS) $(RELEASE_FLAGS) -o $@ -c $<
-
-
-#### Compile C++ source files for Release build.
-$(DIR_BUILD_RELEASE)/%.o: $(DIR_SRC)/%.cpp
-ifeq ($(OS),Windows_NT) # For Windows
-	@if not exist "$(dir $@)" (\
-		$(MKDIR) "$(subst /,\,$(dir $@))" \
-	)
-	@echo     Compile "$<" into "$@"
-else # For Linux
-	@$(MKDIR) $(dir $@)
-	@echo "    Compile '$<' into '$@'"
-endif
-	@$(CXX) $(CPPFLAGS) $(CFLAGS) $(RELEASE_FLAGS) -o $@ -c $<
+	@$(CC) $(CFLAGS) $(CPPFLAGS) $(RELEASE_FLAGS) -o $@ -c $<
 
 
 #### Debug pre-build
@@ -346,11 +315,7 @@ else
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo Build configurations...
 	@echo     OS:         $(OS)
-ifeq ($(SRC_FILES.cxx),)
 	@echo     Compiler:   $(CC)
-else
-	@echo     Compiler:   $(CXX)
-endif
 	@echo     CFLAGS:     $(CFLAGS) $(DEBUG_FLAGS) 
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
@@ -359,11 +324,7 @@ endif
 else # For Linux
 	@echo "Build configurations..."
 	@echo "    OS:         $(shell uname)"
-ifeq ($(SRC_FILES.cxx),)
 	@echo "    Compiler:   $(CC)"
-else
-	@echo "    Compiler:   $(CXX)"
-endif
 	@echo "    CFLAGS:     $(CFLAGS) $(DEBUG_FLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
@@ -398,11 +359,7 @@ ifeq ($(OS),Windows_NT) # For Windows
 else # For Linux
 	@echo "    Link $(words $^) objects into '$(DEBUG_TARGET)'"
 endif
-ifeq ($(SRC_FILES.cxx),)
 	@$(CC) -o $@ $^ $(LDFLAGS)
-else
-	@$(CXX) -o $@ $^ $(LDFLAGS)
-endif
 
 
 #### Compile C source files for Debug build.
@@ -416,21 +373,7 @@ else # For Linux
 	@$(MKDIR) $(dir $@)
 	@echo "    Compile '$<' into '$@'"
 endif
-	@$(CC) $(CPPFLAGS) $(CFLAGS) $(DEBUG_FLAGS) -o $@ -c $<
-
-
-#### Compile C++ source files for Debug build.
-$(DIR_BUILD_DEBUG)/%.o: $(DIR_SRC)/%.cpp
-ifeq ($(OS),Windows_NT) # For Windows
-	@if not exist "$(dir $@)" (\
-		$(MKDIR) "$(subst /,\,$(dir $@))" \
-	)
-	@echo     Compile "$<" into "$@"
-else # For Linux
-	@$(MKDIR) $(dir $@)
-	@echo "    Compile '$<' into '$@'"
-endif
-	@$(CXX) $(CPPFLAGS) $(CFLAGS) $(DEBUG_FLAGS) -o $@ -c $<
+	@$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_FLAGS) -o $@ -c $<
 
 
 #### Clean generated files, remove objects and targets.
@@ -539,11 +482,7 @@ info:
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo Build configurations...
 	@echo     OS:         $(OS)
-ifeq ($(SRC_FILES.cxx),)
 	@echo     Compiler:   $(CC)
-else
-	@echo     Compiler:   $(CXX)
-endif
 	@echo     CFLAGS:     $(CFLAGS)
 	@echo     CPPFLAGS:   $(CPPFLAGS)
 	@echo     LDFLAGS:    $(LDFLAGS)
@@ -551,11 +490,7 @@ endif
 else # For Linux
 	@echo "Build configurations..."
 	@echo "    OS:         $(shell uname)"
-ifeq ($(SRC_FILES.cxx),)
 	@echo "    Compiler:   $(CC)"
-else
-	@echo "    Compiler:   $(CXX)"
-endif
 	@echo "    CFLAGS:     $(CFLAGS)"
 	@echo "    CPPFLAGS:   $(CPPFLAGS)"
 	@echo "    LDFLAGS:    $(LDFLAGS)"
@@ -568,40 +503,23 @@ ifneq ($(SRC_FILES.c),)
 	@echo     $(subst  /,\,$(SRC_FILES.c))
 endif
 	@echo.
-	@echo C++ source files (.cpp) :
-ifneq ($(SRC_FILES.cxx),)
-	@echo     $(subst  /,\,$(SRC_FILES.cxx))
+	@echo Object files (.o) :
+ifneq ($(OBJ_FILES),)
+	@echo     $(subst  /,\,$(OBJ_FILES))
 endif
-	@echo.
-	@echo Object files, Release build :
-ifneq ($(RELEASE_OBJS),)
-	@echo     $(subst  /,\,$(RELEASE_OBJS))
-endif
-	@echo.
-	@echo Object files, Debug build :
-ifneq ($(DEBUG_OBJS),)
-	@echo     $(subst  /,\,$(DEBUG_OBJS))
-endif
-else # For Linux 
+
+else # For Linux
 	@echo "C source files (.c) :"
 ifneq ($(SRC_FILES.c),)
 	@echo "    $(SRC_FILES.c)"
 endif
 	@echo
-	@echo "C++ source files (.cpp) :"
-ifneq ($(SRC_FILES.cxx),)
-	@echo "    $(SRC_FILES.cxx)"
+
+	@echo Object files (.o) :
+ifneq ($(OBJ_FILES),)
+	@echo "    $(OBJ_FILES)"
 endif
-	@echo
-	@echo Object files, Release build :
-ifneq ($(RELEASE_OBJS),)
-	@echo "    $(RELEASE_OBJS)"
-endif
-	@echo
-	@echo Object files, Debug build :
-ifneq ($(DEBUG_OBJS),)
-	@echo "    $(DEBUG_OBJS)"
-endif
+
 endif
 	@echo ================================================================================
 ifeq ($(OS),Windows_NT) # For Windows
@@ -652,15 +570,6 @@ version:
 	@echo ================================== C Compiler ==================================
 	@$(CC) --version
 	@$(CC) -v
-	@echo ================================================================================
-ifeq ($(OS),Windows_NT) # For Windows
-	@echo.
-else # For Linux
-	@echo
-endif
-	@echo ================================= C++ Compiler =================================
-	@$(CXX) --version
-	@$(CXX) -v
 	@echo ================================================================================
 ifeq ($(OS),Windows_NT) # For Windows
 	@echo.

@@ -1,10 +1,9 @@
 [![OS](https://img.shields.io/badge/os-linux-blue.svg)](https://shields.io/)
 [![OS](https://img.shields.io/badge/os-windows-blue.svg)](https://shields.io/)
-[![Status](https://img.shields.io/badge/status-completed-success.svg)](https://shields.io/)
 
-# MAKEFILE C/C++
+# MAKEFILE
 
-Makefile template for small to medium sized C/C++ projects, for Linux and Windows.
+Makefile template for small to medium sized C projects, for Linux and Windows.
 
 You can build the project in two modes : **Release** or **Debug**.
 
@@ -53,11 +52,11 @@ Note that this layout of the project, including `src` directory and `sources.mk`
 
 **Clone** this repository :
 ```
-git clone https://github.com/RaphaelCausse/Makefile_C_Cpp.git
+git clone https://github.com/RaphaelCausse/Makefile.git
 ```
 **Move** to the cloned directory :
 ```
-cd Makefile_C_Cpp
+cd Makefile
 ```
 **Copy** the Makefile in your project at root level of your project directory.
 ```
