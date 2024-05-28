@@ -39,8 +39,8 @@ To use this makefile template properly, please follow the project layout bellow.
   │
   ├──┬─[ src ]
   │  │
-  │  ├──── *.c / *.cpp
-  │  ├──── *.h / *.hpp
+  │  ├──── *.c
+  │  ├──── *.h
   │  ...
   │
   ...
