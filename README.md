@@ -6,7 +6,7 @@
 
 Makefile template for small/medium sized C projects.
 
-Currently in **v2**, please use the version on `main` branch.
+Currently developing and testing **v2**, please use the **v1** on `main` branch.
 
 
 ## AUTHOR
