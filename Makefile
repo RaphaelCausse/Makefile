@@ -25,24 +25,19 @@ CC := gcc
 CSTD := -std=c99
 
 ### Extra flags to give to the C compiler
-CFLAGS := $(CSTD) -Wall -Werror -pedantic
+CFLAGS := $(CSTD) -Wall -Werror -Wextra
 
-### Extra flags to give to the C preprocessor
+### Extra flags to give to the C preprocessor (e.g. -I)
 CPPFLAGS := 
 
-### Extra flags to give to compiler when it invokes the linker
+### Extra flags to give to compiler when it invokes the linker (e.g. -L)
 LDFLAGS := 
 
-### Library names given to compiler when it invokes the linker
+### Library names given to compiler when it invokes the linker (e.g. -l)
 LDLIBS := 
 
-### Build
-BUILD_MODE ?= debug
-
-### Debug mode
-DEBUG_FLAGS := -O0 -g3
-
-### Release mode
+### Build mode dependant flags
+DEBUG_FLAGS   := -O0 -g3
 RELEASE_FLAGS := -02 -g0
 
 
@@ -57,22 +52,26 @@ DIR_SRC   := src
 
 ### Build configuration file
 CONFIG_FILE := MakefileList.mk
--include $(CONFIG_FILE)
+
+### Include configuration file
+ifeq ($(filter $(CONFIG_FILE),$(wildcard *.mk)),$(CONFIG_FILE))
+    include $(CONFIG_FILE)
+endif
+
+### Target executable
+TARGET_EXE := $(DIR_BIN)/$(EXECUTABLE_NAME)
 
 ### Source files
 SOURCE_FILES := $(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES)))
 
 ### Object files 
-OBJECT_FILES = $(addprefix $(DIR_BUILD)/,$(addsuffix .o,$(basename $(filter-out \,$(SOURCE_FILES)))))
+OBJECT_FILES := $(addprefix $(DIR_BUILD)/,$(addsuffix .o,$(basename $(filter-out \,$(SOURCES)))))
+
 
 
 #==============================================================================
 # SHELL
 #==============================================================================
-
-### Shell
-OLD_SHELL := $(SHELL)
-SHELL     := /bin/bash
 
 ### Commands
 MKDIR := mkdir -p
@@ -86,7 +85,7 @@ MV    := mv
 #==============================================================================
 
 #-------------------------------------------------
-# Create the configuration file
+# Create the configuration file and its content
 #-------------------------------------------------
 define CREATE_CONFIG_FILE
 	touch $1; \
@@ -96,8 +95,11 @@ define CREATE_CONFIG_FILE
 	echo "# Define executable name" >> $1; \
 	echo "EXECUTABLE_NAME := " >> $1; \
 	echo >> $1; \
-	echo "# Define source files from directory '$(DIR_SRC)' to compile" >> $1; \
-	echo "SOURCE_FILES := " >> $1; \
+	echo "# Define build mode (debug or release)" >> $1; \
+	echo "BUILD_MODE := " >> $1; \
+	echo >> $1; \
+	echo "# Define source files from '$(DIR_SRC)/' directory to compile" >> $1; \
+	echo "SOURCES := " >> $1; \
 	echo >> $1;
 endef
 
@@ -105,6 +107,8 @@ endef
 #==============================================================================
 # RULES
 #==============================================================================
+
+all: build
 
 #-------------------------------------------------
 # Initialize project
@@ -114,79 +118,123 @@ init:
 	@echo ">-------- Initialize project --------<"
 
 	@if [ ! -d "$(DIR_SRC)" ]; then \
-		echo "[1/2] Creating directory '$(DIR_SRC)'"; \
+		echo "[1/2] Creating directory $(DIR_SRC)/"; \
 		$(MKDIR) $(DIR_SRC); \
 	else \
-		echo "[1/2] Directory '$(DIR_SRC)' already exists"; \
+		echo "[1/2] Directory $(DIR_SRC)/ already exists"; \
 	fi
 
 	@if [ ! -f "$(CONFIG_FILE)" ]; then \
-		echo "[2/2] Creating config file '$(CONFIG_FILE)'"; \
+		echo "[2/2] Creating config file $(CONFIG_FILE)"; \
 		$(call CREATE_CONFIG_FILE,$(CONFIG_FILE)) \
 	else \
-		echo "[2/2] File '$(CONFIG_FILE)' already exists"; \
+		echo "[2/2] File $(CONFIG_FILE) already exists"; \
 	fi
 
 	@echo
 
 
 #-------------------------------------------------
-# Pre build operations
+# (Internal rule) Check directories
 #-------------------------------------------------
-.PHONY: prebuild
-prebuild:
-# @if [ -z "$(PROJECT_NAME)" ]; then \
-#     $(error PROJECT_NAME is required in '$(CONFIG_FILE)'); \
-# else \
-#     $(info PROJECT_NAME := $(PROJECT_NAME)); \
-# fi
-
-# @if [ -z "$(EXECUTABLE_NAME)" ]; then \
-#     $(error EXECUTABLE_NAME is required in '$(CONFIG_FILE)'); \
-# else \
-#     $(info EXECUTABLE_NAME := $(EXECUTABLE_NAME)); \
-# fi
-
-# @if [ -z "$(SOURCE_FILES)" ]; then \
-#     $(error SOURCE_FILES is required in '$(CONFIG_FILE)'); \
-# else \
-#     $(info SOURCE_FILES := $(SOURCE_FILES)); \
+.PHONY: __checkdirs
+__checkdirs:
+	@if [ ! -d "$(DIR_BUILD)" ]; then \
+		$(MKDIR) $(DIR_BUILD); \
+	fi
+	@if [ ! -d "$(DIR_BIN)" ]; then \
+		$(MKDIR) $(DIR_BIN); \
 	fi
 
-	@echo ">-------- Build Project: $(PROJECT_NAME), Configuration: $(BUILD_MODE) --------<"
 
-	@echo $(SOURCE_FILES)
-	@echo $(OBJECT_FILES)
+#-------------------------------------------------
+# (Internal rule) Pre build operations
+#-------------------------------------------------
+.PHONY: __prebuild
+__prebuild: __checkdirs
+    ifeq ($(filter $(CONFIG_FILE),$(wildcard *.mk)),)
+	    $(error Configuration file $(CONFIG_FILE) not detected. Run 'make init' to create it)
+    endif
+
+    ifeq ($(PROJECT_NAME),)
+	    $(error $(CONFIG_FILE): PROJECT_NAME is required. Must provide a project name)
+    endif
+
+    ifeq ($(EXECUTABLE_NAME),)
+	    $(error $(CONFIG_FILE): EXECUTABLE_NAME is required. Must provide an executable name)
+    endif
+
+    ifeq ($(filter $(BUILD_MODE),debug release),)
+	    $(error $(CONFIG_FILE): BUILD_MODE is invalid. Must provide a valid mode (debug or release))
+    endif
+
+    ifeq ($(SOURCES),)
+	    $(error $(CONFIG_FILE): SOURCES is required. Must provide source files)
+    endif
+
+	@echo ">-------- Build Project: $(PROJECT_NAME) ($(BUILD_MODE)) --------<"
+
+    ifeq ($(BUILD_MODE),debug)
+	    $(eval CFLAGS += $(DEBUG_FLAGS))
+    else ifeq ($(BUILD_MODE),release)
+	    $(eval CFLAGS += $(RELEASE_FLAGS))
+    endif
+
 
 #-------------------------------------------------
 # Build operations
 #-------------------------------------------------
 .PHONY: build
-build: prebuild 
+build: __prebuild $(TARGET_EXE)
+	@echo
 
+#-------------------------------------------------
+# Link object files into target executable
+#-------------------------------------------------
+$(TARGET_EXE): $(OBJECT_FILES)
+	@echo "[2/2] Linking executable $@"
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 
 #-------------------------------------------------
-# Post build operations
+# Compile C source files
 #-------------------------------------------------
-.PHONY: postbuild
-postbuild:
-
+$(DIR_BUILD)/%.o: $(DIR_SRC)/%.c
+	@echo "[1/2] Compiling $^"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
 
 
 #-------------------------------------------------
-# Clean project
+# Run executable
+#-------------------------------------------------
+.PHONY: run
+run: $(TARGET_EXE)
+	@./$(TARGET_EXE)
+
+
+#-------------------------------------------------
+# Clean project (simple) 
 #-------------------------------------------------
 .PHONY: clean
 clean:
-	@echo ">-------- Clean --------<"
+	@echo ">-------- Clean project --------<"
+	@echo "[1/2] Deleting executable $(TARGET_EXE)"
+	@$(RM) $(TARGET_EXE)
+	@echo "[2/2] Deleting objects $(OBJECT_FILES)"
+	@$(RM) $(OBJECT_FILES)
+	@echo
 
-	@echo "[1/2] Deleting directory '$(DIR_BIN)'"
-	@$(RM) $(DIR_BIN)
 
-	@echo "[2/2] Deleting directory '$(DIR_BUILD)'"
+#-------------------------------------------------
+# Clean project (light) 
+#-------------------------------------------------
+.PHONY: cleanall
+cleanall:
+	@echo ">-------- Clean project --------<"
+	@echo "[1/2] Deleting directory $(DIR_BUILD)/"
 	@$(RM) $(DIR_BUILD)
-
+	@echo "[2/2] Deleting directory $(DIR_BIN)/"
+	@$(RM) $(DIR_BIN)
 	@echo
 
 
