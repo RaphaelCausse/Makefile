@@ -1,13 +1,12 @@
 #==============================================================================
-# Makefile template for small/medium sized C projects.
-# Follow recommended project layout in README.
-# 
+# Makefile template for small / medium sized C projects.
 # Author: Raphael CAUSSE
 #==============================================================================
 
 ### Version
 MK_VERSION_MAJOR := 2
 MK_VERSION_MINOR := 0
+MK_VERSION_PATCH := 1
 
 ### Environment
 ENV_SYST := $(shell uname -s)
@@ -25,7 +24,7 @@ CC := gcc
 CSTD := -std=c99
 
 ### Extra flags to give to the C compiler
-CFLAGS := $(CSTD) -Wall -Werror -Wextra
+CFLAGS := $(CSTD) -Wall -Wextra
 
 ### Extra flags to give to the C preprocessor (e.g. -I)
 CPPFLAGS := 
@@ -36,7 +35,7 @@ LDFLAGS :=
 ### Library names given to compiler when it invokes the linker (e.g. -l)
 LDLIBS := 
 
-### Build mode dependant flags
+### Build mode specific flags
 DEBUG_FLAGS   := -O0 -g3
 RELEASE_FLAGS := -02 -g0
 
@@ -89,17 +88,21 @@ MV    := mv
 #-------------------------------------------------
 define CREATE_CONFIG_FILE
 	touch $1; \
-	echo "# Define project name" >> $1; \
-	echo "PROJECT_NAME := " >> $1; \
+	echo '#-------------------------------------------------' >> $1; \
+	echo '# MakefileList.mk v$(MK_VERSION_MAJOR).$(MK_VERSION_MINOR).$(MK_VERSION_PATCH)' >> $1; \
+	echo '#-------------------------------------------------' >> $1; \
 	echo >> $1; \
-	echo "# Define executable name" >> $1; \
-	echo "EXECUTABLE_NAME := " >> $1; \
+	echo '# Define project name' >> $1; \
+	echo 'PROJECT_NAME := ' >> $1; \
 	echo >> $1; \
-	echo "# Define build mode (debug or release)" >> $1; \
-	echo "BUILD_MODE := " >> $1; \
+	echo '# Define executable name' >> $1; \
+	echo 'EXECUTABLE_NAME := ' >> $1; \
 	echo >> $1; \
-	echo "# Define source files from '$(DIR_SRC)/' directory to compile" >> $1; \
-	echo "SOURCES := " >> $1; \
+	echo '# Define build mode (debug or release)' >> $1; \
+	echo 'BUILD_MODE := ' >> $1; \
+	echo >> $1; \
+	echo '# Define source files from "$(DIR_SRC)/" directory to compile' >> $1; \
+	echo 'SOURCES := ' >> $1; \
 	echo >> $1;
 endef
 
@@ -108,31 +111,30 @@ endef
 # RULES
 #==============================================================================
 
-all: build
+all: init
 
 #-------------------------------------------------
 # Initialize project
 #-------------------------------------------------
 .PHONY: init
 init:
-	@echo ">-------- Initialize project --------<"
+	@echo 'Initialize project directory'
 
 	@if [ ! -d "$(DIR_SRC)" ]; then \
-		echo " Creating directory $(DIR_SRC)/"; \
+		echo '-- Creating directory "$(DIR_SRC)/"'; \
 		$(MKDIR) $(DIR_SRC); \
 	else \
-		echo " Directory $(DIR_SRC)/ already exists"; \
+		echo '-- Directory "$(DIR_SRC)/" already exists'; \
 	fi
 
 	@if [ ! -f "$(CONFIG_FILE)" ]; then \
-		echo " Creating configuration file $(CONFIG_FILE)"; \
+		echo '-- Creating configuration file "$(CONFIG_FILE)"'; \
 		$(call CREATE_CONFIG_FILE,$(CONFIG_FILE)) \
 	else \
-		echo " File $(CONFIG_FILE) already exists"; \
+		echo '-- Configuration file "$(CONFIG_FILE)" already exists'; \
 	fi
 
-	@echo ">-------- Done --------<"
-	@echo
+	@echo 'Initialize done'
 
 
 #-------------------------------------------------
@@ -140,11 +142,11 @@ init:
 #-------------------------------------------------
 .PHONY: __checkdirs
 __checkdirs:
-	@if [ ! -d "$(DIR_BUILD)" ]; then \
-		$(MKDIR) $(DIR_BUILD); \
-	fi
 	@if [ ! -d "$(DIR_BIN)" ]; then \
 		$(MKDIR) $(DIR_BIN); \
+	fi
+	@if [ ! -d "$(DIR_BUILD)" ]; then \
+		$(MKDIR) $(DIR_BUILD); \
 	fi
 
 
@@ -154,7 +156,7 @@ __checkdirs:
 .PHONY: __prebuild
 __prebuild: __checkdirs
     ifeq ($(filter $(CONFIG_FILE),$(wildcard *.mk)),)
-	    $(error Configuration file $(CONFIG_FILE) not detected. Run 'make init' to create it)
+	    $(error Configuration file "$(CONFIG_FILE)" not found. Please run "make init")
     endif
 
     ifeq ($(PROJECT_NAME),)
@@ -173,7 +175,7 @@ __prebuild: __checkdirs
 	    $(error $(CONFIG_FILE): SOURCES is required. Must provide source files)
     endif
 
-	@echo ">-------- Build Project: $(PROJECT_NAME) ($(BUILD_MODE)) --------<"
+	@echo 'Build Project: $(PROJECT_NAME) ($(BUILD_MODE))'
 
     ifeq ($(BUILD_MODE),debug)
 	    $(eval CFLAGS += $(DEBUG_FLAGS))
@@ -187,15 +189,14 @@ __prebuild: __checkdirs
 #-------------------------------------------------
 .PHONY: build
 build: __prebuild $(EXECUTABLE)
-	@echo ">-------- Done --------<"
-	@echo
+	@echo 'Build done'
 
 
 #-------------------------------------------------
 # Link object files into target executable
 #-------------------------------------------------
 $(EXECUTABLE): $(OBJECT_FILES)
-	@echo " Linking executable $@"
+	@echo '-- Linking executable "$@"'
 	@$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 
@@ -203,7 +204,8 @@ $(EXECUTABLE): $(OBJECT_FILES)
 # Compile C source files
 #-------------------------------------------------
 $(DIR_BUILD)/%.o: $(DIR_SRC)/%.c
-	@echo " Compiling $^"
+	@echo '-- Compiling "$<"'
+	@$(MKDIR) $(dir $<)
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
 
 
@@ -220,13 +222,12 @@ run: $(EXECUTABLE)
 #-------------------------------------------------
 .PHONY: clean
 clean:
-	@echo ">-------- Clean project --------<"
-	@echo " Deleting executable $(EXECUTABLE)"
+	@echo 'Clean project'
+	@echo '-- Deleting executable "$(EXECUTABLE)"'
 	@$(RM) $(EXECUTABLE)
-	@echo " Deleting objects $(OBJECT_FILES)"
+	@echo '-- Deleting objects "$(OBJECT_FILES)"'
 	@$(RM) $(OBJECT_FILES)
-	@echo ">-------- Done --------<"
-	@echo
+	@echo 'Clean done'
 
 
 #-------------------------------------------------
@@ -234,13 +235,12 @@ clean:
 #-------------------------------------------------
 .PHONY: cleanall
 cleanall:
-	@echo ">-------- Clean project --------<"
-	@echo " Deleting directory $(DIR_BIN)/"
+	@echo 'Clean entire project'
+	@echo '-- Deleting directory "$(DIR_BIN)/"'
 	@$(RM) $(DIR_BIN)
-	@echo " Deleting directory $(DIR_BUILD)/"
+	@echo '-- Deleting directory "$(DIR_BUILD)/"'
 	@$(RM) $(DIR_BUILD)
-	@echo ">-------- Done --------<"
-	@echo
+	@echo 'Clean done'
 
 
 #-------------------------------------------------
@@ -248,5 +248,5 @@ cleanall:
 #-------------------------------------------------
 .PHONY: version
 version:
-	@echo Makefile v$(MK_VERSION_MAJOR).$(MK_VERSION_MINOR) for $(ENV_SYST)-$(ENV_ARCH)
+	@echo Makefile v$(MK_VERSION_MAJOR).$(MK_VERSION_MINOR).$(MK_VERSION_PATCH) for $(ENV_SYST)-$(ENV_ARCH)
 	@echo
