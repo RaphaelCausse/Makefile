@@ -59,7 +59,7 @@ ifeq ($(filter $(CONFIG_FILE),$(wildcard *.mk)),$(CONFIG_FILE))
 endif
 
 ### Target executable
-TARGET_EXE := $(DIR_BIN)/$(EXECUTABLE_NAME)
+EXECUTABLE := $(DIR_BIN)/$(EXECUTABLE_NAME)
 
 ### Source files
 SOURCE_FILES := $(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES)))
@@ -118,19 +118,20 @@ init:
 	@echo ">-------- Initialize project --------<"
 
 	@if [ ! -d "$(DIR_SRC)" ]; then \
-		echo "[1/2] Creating directory $(DIR_SRC)/"; \
+		echo " Creating directory $(DIR_SRC)/"; \
 		$(MKDIR) $(DIR_SRC); \
 	else \
-		echo "[1/2] Directory $(DIR_SRC)/ already exists"; \
+		echo " Directory $(DIR_SRC)/ already exists"; \
 	fi
 
 	@if [ ! -f "$(CONFIG_FILE)" ]; then \
-		echo "[2/2] Creating config file $(CONFIG_FILE)"; \
+		echo " Creating configuration file $(CONFIG_FILE)"; \
 		$(call CREATE_CONFIG_FILE,$(CONFIG_FILE)) \
 	else \
-		echo "[2/2] File $(CONFIG_FILE) already exists"; \
+		echo " File $(CONFIG_FILE) already exists"; \
 	fi
 
+	@echo ">-------- Done --------<"
 	@echo
 
 
@@ -185,14 +186,16 @@ __prebuild: __checkdirs
 # Build operations
 #-------------------------------------------------
 .PHONY: build
-build: __prebuild $(TARGET_EXE)
+build: __prebuild $(EXECUTABLE)
+	@echo ">-------- Done --------<"
 	@echo
+
 
 #-------------------------------------------------
 # Link object files into target executable
 #-------------------------------------------------
-$(TARGET_EXE): $(OBJECT_FILES)
-	@echo "[2/2] Linking executable $@"
+$(EXECUTABLE): $(OBJECT_FILES)
+	@echo " Linking executable $@"
 	@$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 
@@ -200,7 +203,7 @@ $(TARGET_EXE): $(OBJECT_FILES)
 # Compile C source files
 #-------------------------------------------------
 $(DIR_BUILD)/%.o: $(DIR_SRC)/%.c
-	@echo "[1/2] Compiling $^"
+	@echo " Compiling $^"
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
 
 
@@ -208,8 +211,8 @@ $(DIR_BUILD)/%.o: $(DIR_SRC)/%.c
 # Run executable
 #-------------------------------------------------
 .PHONY: run
-run: $(TARGET_EXE)
-	@./$(TARGET_EXE)
+run: $(EXECUTABLE)
+	@./$(EXECUTABLE)
 
 
 #-------------------------------------------------
@@ -218,23 +221,25 @@ run: $(TARGET_EXE)
 .PHONY: clean
 clean:
 	@echo ">-------- Clean project --------<"
-	@echo "[1/2] Deleting executable $(TARGET_EXE)"
-	@$(RM) $(TARGET_EXE)
-	@echo "[2/2] Deleting objects $(OBJECT_FILES)"
+	@echo " Deleting executable $(EXECUTABLE)"
+	@$(RM) $(EXECUTABLE)
+	@echo " Deleting objects $(OBJECT_FILES)"
 	@$(RM) $(OBJECT_FILES)
+	@echo ">-------- Done --------<"
 	@echo
 
 
 #-------------------------------------------------
-# Clean project (light) 
+# Clean project (all)
 #-------------------------------------------------
 .PHONY: cleanall
 cleanall:
 	@echo ">-------- Clean project --------<"
-	@echo "[1/2] Deleting directory $(DIR_BUILD)/"
-	@$(RM) $(DIR_BUILD)
-	@echo "[2/2] Deleting directory $(DIR_BIN)/"
+	@echo " Deleting directory $(DIR_BIN)/"
 	@$(RM) $(DIR_BIN)
+	@echo " Deleting directory $(DIR_BUILD)/"
+	@$(RM) $(DIR_BUILD)
+	@echo ">-------- Done --------<"
 	@echo
 
 
