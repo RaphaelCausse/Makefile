@@ -6,7 +6,7 @@
 ### Version
 MK_VERSION_MAJOR := 2
 MK_VERSION_MINOR := 0
-MK_VERSION_PATCH := 1
+MK_VERSION_PATCH := 0
 
 ### Environment
 ENV_SYST := $(shell uname -s)
@@ -61,11 +61,10 @@ endif
 EXECUTABLE := $(DIR_BIN)/$(EXECUTABLE_NAME)
 
 ### Source files
-SOURCE_FILES := $(addprefix $(DIR_SRC)/,$(filter-out \,$(SOURCES)))
+SOURCE_FILES := $(filter-out \,$(ALL_SOURCES))
 
 ### Object files 
-OBJECT_FILES := $(addprefix $(DIR_BUILD)/,$(addsuffix .o,$(basename $(filter-out \,$(SOURCES)))))
-
+OBJECT_FILES := $(subst $(DIR_SRC),$(DIR_BUILD),$(addsuffix .o,$(basename $(filter-out \,$(ALL_SOURCES)))))
 
 
 #==============================================================================
@@ -101,8 +100,8 @@ define CREATE_CONFIG_FILE
 	echo '# Define build mode (debug or release)' >> $1; \
 	echo 'BUILD_MODE := ' >> $1; \
 	echo >> $1; \
-	echo '# Define source files from "$(DIR_SRC)/" directory to compile' >> $1; \
-	echo 'SOURCES := ' >> $1; \
+	echo '# Define all source files to compile' >> $1; \
+	echo 'ALL_SOURCES := ' >> $1; \
 	echo >> $1;
 endef
 
@@ -171,8 +170,8 @@ __prebuild: __checkdirs
 	    $(error $(CONFIG_FILE): BUILD_MODE is invalid. Must provide a valid mode (debug or release))
     endif
 
-    ifeq ($(SOURCES),)
-	    $(error $(CONFIG_FILE): SOURCES is required. Must provide source files)
+    ifeq ($(ALL_SOURCES),)
+	    $(error $(CONFIG_FILE): ALL_SOURCES is required. Must provide all source files to compile)
     endif
 
 	@echo 'Build Project: $(PROJECT_NAME) ($(BUILD_MODE))'
@@ -204,8 +203,8 @@ $(EXECUTABLE): $(OBJECT_FILES)
 # Compile C source files
 #-------------------------------------------------
 $(DIR_BUILD)/%.o: $(DIR_SRC)/%.c
-	@echo '-- Compiling "$<"'
-	@$(MKDIR) $(dir $<)
+	@echo '-- Compiling "$<" to "$@"'
+	@$(MKDIR) $(dir $@)
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
 
 
@@ -218,11 +217,11 @@ run: $(EXECUTABLE)
 
 
 #-------------------------------------------------
-# Clean project (simple) 
+# Clean generated files
 #-------------------------------------------------
 .PHONY: clean
 clean:
-	@echo 'Clean project'
+	@echo 'Clean generated files'
 	@echo '-- Deleting executable "$(EXECUTABLE)"'
 	@$(RM) $(EXECUTABLE)
 	@echo '-- Deleting objects "$(OBJECT_FILES)"'
@@ -231,7 +230,7 @@ clean:
 
 
 #-------------------------------------------------
-# Clean project (all)
+# Clean entire project
 #-------------------------------------------------
 .PHONY: cleanall
 cleanall:
@@ -241,6 +240,23 @@ cleanall:
 	@echo '-- Deleting directory "$(DIR_BUILD)/"'
 	@$(RM) $(DIR_BUILD)
 	@echo 'Clean done'
+
+
+#-------------------------------------------------
+# Project information
+#-------------------------------------------------
+.PHONY: info
+info:
+	@echo "Build configurations ($(BUILD_MODE))"
+	@echo "-- CC: $(CC)"
+	@echo "-- CFLAGS: $(CFLAGS)"
+	@echo "-- CPPFLAGS: $(CPPFLAGS)"
+	@echo "-- LDFLAGS: $(LDFLAGS)"
+	@echo "-- LDLIBS: $(LDLIBS)"
+	@echo "Files"
+	@echo "-- EXECUTABLE: $(EXECUTABLE)"
+	@echo "-- SOURCE_FILES: $(SOURCE_FILES)"
+	@echo "-- OBJECT_FILES: $(OBJECT_FILES)"
 
 
 #-------------------------------------------------
