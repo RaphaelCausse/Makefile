@@ -120,17 +120,17 @@ init:
 	@echo 'Initialize project directory'
 
 	@if [ ! -d "$(DIR_SRC)" ]; then \
-		echo '-- Creating directory "$(DIR_SRC)/"'; \
+		echo '-- Creating directory $(DIR_SRC)/'; \
 		$(MKDIR) $(DIR_SRC); \
 	else \
-		echo '-- Directory "$(DIR_SRC)/" already exists'; \
+		echo '-- Directory $(DIR_SRC)/ already exists'; \
 	fi
 
 	@if [ ! -f "$(CONFIG_FILE)" ]; then \
-		echo '-- Creating configuration file "$(CONFIG_FILE)"'; \
+		echo '-- Creating configuration file $(CONFIG_FILE)'; \
 		$(call CREATE_CONFIG_FILE,$(CONFIG_FILE)) \
 	else \
-		echo '-- Configuration file "$(CONFIG_FILE)" already exists'; \
+		echo '-- Configuration file $(CONFIG_FILE) already exists'; \
 	fi
 
 	@echo 'Initialize done'
@@ -155,7 +155,7 @@ __checkdirs:
 .PHONY: __prebuild
 __prebuild: __checkdirs
     ifeq ($(filter $(CONFIG_FILE),$(wildcard *.mk)),)
-	    $(error Configuration file "$(CONFIG_FILE)" not found. Please run "make init")
+	    $(error Configuration file '$(CONFIG_FILE)' not found. Please run "make init")
     endif
 
     ifeq ($(PROJECT_NAME),)
@@ -195,7 +195,7 @@ build: __prebuild $(EXECUTABLE)
 # Link object files into target executable
 #-------------------------------------------------
 $(EXECUTABLE): $(OBJECT_FILES)
-	@echo '-- Linking executable "$@"'
+	@echo '-- Linking executable $@'
 	@$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 
@@ -203,7 +203,7 @@ $(EXECUTABLE): $(OBJECT_FILES)
 # Compile C source files
 #-------------------------------------------------
 $(DIR_BUILD)/%.o: $(DIR_SRC)/%.c
-	@echo '-- Compiling "$<" to "$@"'
+	@echo '-- Compiling $<
 	@$(MKDIR) $(dir $@)
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
 
@@ -222,9 +222,9 @@ run: $(EXECUTABLE)
 .PHONY: clean
 clean:
 	@echo 'Clean generated files'
-	@echo '-- Deleting executable "$(EXECUTABLE)"'
+	@echo '-- Deleting executable $(EXECUTABLE)'
 	@$(RM) $(EXECUTABLE)
-	@echo '-- Deleting objects "$(OBJECT_FILES)"'
+	@echo '-- Deleting objects $(OBJECT_FILES)'
 	@$(RM) $(OBJECT_FILES)
 	@echo 'Clean done'
 
@@ -235,9 +235,9 @@ clean:
 .PHONY: cleanall
 cleanall:
 	@echo 'Clean entire project'
-	@echo '-- Deleting directory "$(DIR_BIN)/"'
+	@echo '-- Deleting directory $(DIR_BIN)/'
 	@$(RM) $(DIR_BIN)
-	@echo '-- Deleting directory "$(DIR_BUILD)/"'
+	@echo '-- Deleting directory $(DIR_BUILD)/'
 	@$(RM) $(DIR_BUILD)
 	@echo 'Clean done'
 
@@ -247,16 +247,16 @@ cleanall:
 #-------------------------------------------------
 .PHONY: info
 info:
-	@echo "Build configurations ($(BUILD_MODE))"
-	@echo "-- CC: $(CC)"
-	@echo "-- CFLAGS: $(CFLAGS)"
-	@echo "-- CPPFLAGS: $(CPPFLAGS)"
-	@echo "-- LDFLAGS: $(LDFLAGS)"
-	@echo "-- LDLIBS: $(LDLIBS)"
-	@echo "Files"
-	@echo "-- EXECUTABLE: $(EXECUTABLE)"
-	@echo "-- SOURCE_FILES: $(SOURCE_FILES)"
-	@echo "-- OBJECT_FILES: $(OBJECT_FILES)"
+	@echo 'Build configurations ($(BUILD_MODE))'
+	@echo '-- CC: $(CC)'
+	@echo '-- CFLAGS: $(CFLAGS)'
+	@echo '-- CPPFLAGS: $(CPPFLAGS)'
+	@echo '-- LDFLAGS: $(LDFLAGS)'
+	@echo '-- LDLIBS: $(LDLIBS)'
+	@echo 'Files'
+	@echo '-- EXECUTABLE: $(EXECUTABLE)'
+	@echo '-- SOURCE_FILES: $(SOURCE_FILES)'
+	@echo '-- OBJECT_FILES: $(OBJECT_FILES)'
 
 
 #-------------------------------------------------
